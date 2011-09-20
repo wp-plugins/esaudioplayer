@@ -10,7 +10,8 @@ This is a cross-browser simple audio player plugin.
 
 == Description ==
 
-This is a simple, cross platform audio player.
+This is a simple, cross platform audio player.You can get documentation and view demos from following site:
+http://tempspace.net/plugins/?page_id=4
 
 This audio player has three different modes:
 
