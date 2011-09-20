@@ -44,5 +44,8 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 
 == Changelog ==
 
+= 0.01h-pre7 =
+* Changed plugin URL.
+
 = 0.01h-pre6 =
 * First release.
