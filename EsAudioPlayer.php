@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: EsAudioPlayer
-Plugin URI: http://tempspace.net/
+Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: Extremely Simple Ausio Player
-Version: 0.01h-pre6
+Version: 0.01h-pre7
 Author: Atsushi Ueda
-Author URI: http://atsushiueda.com/wtest
+Author URI: http://tempspace.net/plugins/
 License: GPL2
 */
 
