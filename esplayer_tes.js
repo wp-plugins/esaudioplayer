@@ -1,3 +1,4 @@
+var esplayer_debug = false;
 
 soundManager.url = esAudioPlayer_plugin_URL + '/swf/';
 soundManager.flashVersion = 8; // optional: shiny features (default = 8)
@@ -251,7 +252,7 @@ EsAudioPlayer.prototype.initCanvas = function()
 		//this.sx_st = this.width+5+this.slider_width/2;
 		//this.sx_en = this.canvas_width - 5-this.slider_width/2;
 	}
-	if (!(this.canvas!=null)) alert('Canvas could not be prepared. '+this.id+' is null');
+	if (!(this.canvas!=null) && esplayer_debug) alert('Canvas could not be prepared. '+this.id+' is null');
 
 	if (1) {
 		this.canvas.setAttribute("width",this.canvas_width);
@@ -292,9 +293,11 @@ function getColor()
 			esplayer_color_loaded = true;
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			alert(textStatus);
+			if (esplayer_debug) {
+				alert(textStatus);
+				alert("XMLHttpRequest: "+XMLHttpRequest+"\n"+"textStatus:"+textStatus+"\n"+"errorThrown: "+errorThrown);
+			}
 			esplayer_color_loaded = true;
-alert("XMLHttpRequest: "+XMLHttpRequest+"\n"+"textStatus:"+textStatus+"\n"+"errorThrown: "+errorThrown);
 		}
 	});
 }
