@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: aueda
 Donate link: http://tempspace.net/plugins/
-Tags: audio, player, cross-browser, cross-platform, cross, browser, platform, slideshow
+Tags: audio, player, cross-browser, cross-platform, cross, browser, platform, slideshow, mp3
 Requires at least: 3.2.0
 Tested up to: 3.2.1
 Stable tag: 4.3
