@@ -2,21 +2,21 @@
 /*
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
-Description: Extremely Simple Ausio Player
-Version: 1.0.0
+Description: This is an Extremely Simple Audio Player plugin.
+Version: 1.1.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
 */
 
-define("ESP_DEBUG", 1);
+define("ESP_DEBUG", 0);
 
 function dbg2($str){$fp=fopen("/tmp/smdebug.txt","a");fwrite($fp,$str . "\n");fclose($fp);}
 
 function esplayer_init() {
-	if (!is_admin()) {
+	//if (!is_admin()) {
 		wp_enqueue_script('jquery');
-	}
+	//}
 }
 add_action('init', 'esplayer_init');
 
@@ -432,9 +432,77 @@ function esaudioplayer_magic_function()
 
 	$plugin = plugin_basename('EsAudioPlayer'); $plugin = dirname(__FILE__);
 	?>
+
+	<div id="colorpicker1" style="position:absolute"></div>
+	<div id="colorpicker2" style="position:absolute"></div>
+	<div id="colorpicker3" style="position:absolute"></div>
+	<div id="colorpicker4" style="position:absolute"></div>
+	<div id="colorpicker5" style="position:absolute"></div>
+	<div id="colorpicker6" style="position:absolute"></div>
+	<div id="colorpicker7" style="position:absolute"></div>
+	<div id="colorpicker8" style="position:absolute"></div>
+	<div id="colorpicker9" style="position:absolute"></div>
+
+
 	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript">
+		jQuery(document).ready(function(){
+			jQuery('#esaudioplayer_basecolor_play').focus(function(){jQuery('#colorpicker1').show();});
 
+			jQuery('#colorpicker1').farbtastic('#esaudioplayer_basecolor_play').hide();
+			jQuery('#colorpicker2').farbtastic('#esaudioplayer_symbolcolor_play').hide();
+			jQuery('#colorpicker3').farbtastic('#esaudioplayer_basecolor_stop').hide();
+			jQuery('#colorpicker4').farbtastic('#esaudioplayer_symbolcolor_stop').hide();
+			jQuery('#colorpicker5').farbtastic('#esaudioplayer_basecolor_pause').hide();
+			jQuery('#colorpicker6').farbtastic('#esaudioplayer_symbolcolor_pause').hide();
+			jQuery('#colorpicker7').farbtastic('#esaudioplayer_slidercolor_line').hide();
+			jQuery('#colorpicker8').farbtastic('#esaudioplayer_slidercolor_knob').hide();
+			jQuery('#colorpicker9').farbtastic('#esaudioplayer_shadowcolor').hide();
+
+			SetPosition('#esaudioplayer_basecolor_play','#colorpicker1');
+			SetPosition('#esaudioplayer_symbolcolor_play','#colorpicker2');
+			SetPosition('#esaudioplayer_basecolor_stop','#colorpicker3');
+			SetPosition('#esaudioplayer_symbolcolor_stop','#colorpicker4');
+			SetPosition('#esaudioplayer_basecolor_pause','#colorpicker5');
+			SetPosition('#esaudioplayer_symbolcolor_pause','#colorpicker6');
+			SetPosition('#esaudioplayer_slidercolor_line','#colorpicker7');
+			SetPosition('#esaudioplayer_slidercolor_knob','#colorpicker8');
+			SetPosition('#esaudioplayer_shadowcolor','#colorpicker9');
+
+			jQuery('#esaudioplayer_basecolor_play').focus(function(){jQuery('#colorpicker1').show();});
+			jQuery('#esaudioplayer_symbolcolor_play').focus(function(){jQuery('#colorpicker2').show();});
+			jQuery('#esaudioplayer_basecolor_stop').focus(function(){jQuery('#colorpicker3').show();});
+			jQuery('#esaudioplayer_symbolcolor_stop').focus(function(){jQuery('#colorpicker4').show();});
+			jQuery('#esaudioplayer_basecolor_pause').focus(function(){jQuery('#colorpicker5').show();});
+			jQuery('#esaudioplayer_symbolcolor_pause').focus(function(){jQuery('#colorpicker6').show();});
+			jQuery('#esaudioplayer_slidercolor_line').focus(function(){jQuery('#colorpicker7').show();});
+			jQuery('#esaudioplayer_slidercolor_knob').focus(function(){jQuery('#colorpicker8').show();});
+			jQuery('#esaudioplayer_shadowcolor').focus(function(){jQuery('#colorpicker9').show();});
+
+			jQuery('#esaudioplayer_basecolor_play').blur(function(){jQuery('#colorpicker1').hide();});
+			jQuery('#esaudioplayer_symbolcolor_play').blur(function(){jQuery('#colorpicker2').hide();});
+			jQuery('#esaudioplayer_basecolor_stop').blur(function(){jQuery('#colorpicker3').hide();});
+			jQuery('#esaudioplayer_symbolcolor_stop').blur(function(){jQuery('#colorpicker4').hide();});
+			jQuery('#esaudioplayer_basecolor_pause').blur(function(){jQuery('#colorpicker5').hide();});
+			jQuery('#esaudioplayer_symbolcolor_pause').blur(function(){jQuery('#colorpicker6').hide();});
+			jQuery('#esaudioplayer_slidercolor_line').blur(function(){jQuery('#colorpicker7').hide();});
+			jQuery('#esaudioplayer_slidercolor_knob').blur(function(){jQuery('#colorpicker8').hide();});
+			jQuery('#esaudioplayer_shadowcolor').blur(function(){jQuery('#colorpicker9').hide();});
+		});
+		function SetPosition(el, cl)
+		{
+			var left = 0;
+			var top = 0;
+			left = jQuery(el).offset().left + jQuery(el).width()*1.2;
+			top = jQuery(el).offset().top -jQuery(cl).height()/2;
+			var height = jQuery(el).height();
+			if (!isNaN(parseInt(jQuery(el).css('padding-top')))) height += parseInt(jQuery(el).css('padding-top'));
+			if (!isNaN(parseInt(jQuery(el).css('margin-top')))) height += parseInt(jQuery(el).css('margin-top'));
+			var y = Math.floor(top) + height;
+			var x = Math.floor(left);
+			jQuery(cl).css('top',y+"px");
+			jQuery(cl).css('left',x+"px");
+		}
 	</script>
 	<div class="wrap">
 		<h2>EsAudioPlayer configuration</h2>
@@ -453,33 +521,33 @@ function esaudioplayer_magic_function()
 		<?php $shadowsize = get_option("esaudioplayer_shadowsize", "0.1"); ?>
 		<table class="form-table">
 		<tr valign="top">
-		<th scope="row">Base Color (Play) <input type="text" name="esaudioplayer_basecolor_play" value="<?php echo $basecolor_play; ?>" /></th>
+		<th scope="row">Base Color (Play) <input type="text" id="esaudioplayer_basecolor_play" name="esaudioplayer_basecolor_play" value="<?php echo $basecolor_play; ?>" /></th>
 		</tr>
 		<tr>
-		<th scope="row">Symbol Color (Play) <input type="text" name="esaudioplayer_symbolcolor_play" value="<?php echo $symbolcolor_play; ?>" /></th>
+		<th scope="row">Symbol Color (Play) <input type="text" id="esaudioplayer_symbolcolor_play" name="esaudioplayer_symbolcolor_play" value="<?php echo $symbolcolor_play; ?>" /></th>
 
 		</tr>
 		<tr valign="top">
-		<th scope="row">Base Color (Stop) <input type="text" name="esaudioplayer_basecolor_stop" value="<?php echo $basecolor_stop; ?>" /></th>
+		<th scope="row">Base Color (Stop) <input type="text" id="esaudioplayer_basecolor_stop" name="esaudioplayer_basecolor_stop" value="<?php echo $basecolor_stop; ?>" /></th>
 		</tr>
 		<tr>
-		<th scope="row">Symbol Color (Stop) <input type="text" name="esaudioplayer_symbolcolor_stop" value="<?php echo $symbolcolor_stop; ?>" /></th>
-		</tr>
-
-		</tr>
-		<tr valign="top">
-		<th scope="row">Base Color (Pause) <input type="text" name="esaudioplayer_basecolor_pause" value="<?php echo $basecolor_pause; ?>" /></th>
-		</tr>
-		<tr>
-		<th scope="row">Symbol Color (Pause) <input type="text" name="esaudioplayer_symbolcolor_pause" value="<?php echo $symbolcolor_pause; ?>" /></th>
+		<th scope="row">Symbol Color (Stop) <input type="text" id="esaudioplayer_symbolcolor_stop" name="esaudioplayer_symbolcolor_stop" value="<?php echo $symbolcolor_stop; ?>" /></th>
 		</tr>
 
 		</tr>
 		<tr valign="top">
-		<th scope="row">Slider Color (line) <input type="text" name="esaudioplayer_slidercolor_line" value="<?php echo $slidercolor_line; ?>" /></th>
+		<th scope="row">Base Color (Pause) <input type="text" id="esaudioplayer_basecolor_pause" name="esaudioplayer_basecolor_pause" value="<?php echo $basecolor_pause; ?>" /></th>
 		</tr>
 		<tr>
-		<th scope="row">Slider Color (knob) <input type="text" name="esaudioplayer_slidercolor_knob" value="<?php echo $slidercolor_knob; ?>" /></th>
+		<th scope="row">Symbol Color (Pause) <input type="text" id="esaudioplayer_symbolcolor_pause" name="esaudioplayer_symbolcolor_pause" value="<?php echo $symbolcolor_pause; ?>" /></th>
+		</tr>
+
+		</tr>
+		<tr valign="top">
+		<th scope="row">Slider Color (line) <input type="text" id="esaudioplayer_slidercolor_line" name="esaudioplayer_slidercolor_line" value="<?php echo $slidercolor_line; ?>" /></th>
+		</tr>
+		<tr>
+		<th scope="row">Slider Color (knob) <input type="text" id="esaudioplayer_slidercolor_knob" name="esaudioplayer_slidercolor_knob" value="<?php echo $slidercolor_knob; ?>" /></th>
 		</tr>
 
 		</tr>
@@ -487,7 +555,7 @@ function esaudioplayer_magic_function()
 		<th scope="row">Shadow Size<input type="text" name="esaudioplayer_shadowsize" value="<?php echo $shadowsize; ?>" /></th>
 		</tr>
 		<tr>
-		<th scope="row">Shadow Color<input type="text" name="esaudioplayer_shadowcolor" value="<?php echo $shadowcolor; ?>" /></th>
+		<th scope="row">Shadow Color<input type="text" id="esaudioplayer_shadowcolor" name="esaudioplayer_shadowcolor" value="<?php echo $shadowcolor; ?>" /></th>
 		</tr>
 
 
@@ -506,6 +574,15 @@ function esaudioplayer_magic_function()
 		//echo '<script type="text/javascript">alert("Options Saved.");</script>';
 	}
 }
+
+function EsAudioPlayer_admin_head()
+{
+	global $esAudioPlayer_plugin_URL;
+	echo "<link rel='stylesheet' href='". $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.css' type='text/css' media='all' />\n";
+	echo "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.min.js\"></script>\n";
+}
+add_action( 'admin_head', 'EsAudioPlayer_admin_head' ); 
+
 
 /*  <footer>sectionに、player Javascriptを追加   */
 add_action( 'wp_footer', 'EsAudioPlayer_footer_filter' );

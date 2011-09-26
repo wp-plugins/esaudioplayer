@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: aueda
 Donate link: http://tempspace.net/plugins/
-Tags: audio, player, cross-browser, cross-platform, cross, browser, platform, slideshow, mp3
+Tags: audio,player,cross-browser,cross-platform,cross,browser,platform,slideshow,mp3,mp3 player,audio player
 Requires at least: 3.2.0
 Tested up to: 3.2.1
 Stable tag: 4.3
@@ -10,18 +10,18 @@ This is a cross-browser simple audio(MP3) player plugin.
 
 == Description ==
 
-This is a simple, cross platform audio player.You can get documentation and view demos from following site:
+This is a simple, cross platform audio player.You can get documentation and view demos from following site:<br>
 http://tempspace.net/plugins/?page_id=4
 
 This audio player has three different modes:
 
-(1)Simple mode
+(1)Simple mode<br>
 What the player has is only a play-button. Or when its width is specified as greater than 2x of height, a positioning slider is displayed.
 
-(2)Image mode
+(2)Image mode<br>
 When an image on the wordpress page or post is clicked, specified music begins playing.
 
-(3)Slideshow mode
+(3)Slideshow mode<br>
 Playing slideshow and music. Timings of changing images are specified in an timetable.
 
 I tested this plugin with IE8,Chrome,Firefox,Opera,Safari(WindowsXP), IE9(Windows7), iPod touch(iOS 4.3.5), and Android(2.3, emulator).
@@ -44,6 +44,9 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+
+= 1.1.0 =
+* Added color picker to the configuration page.
 
 = 1.0.0 =
 * Improved stability.
