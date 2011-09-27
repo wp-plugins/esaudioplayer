@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.1.0
+Version: 1.1.1
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -14,9 +14,7 @@ define("ESP_DEBUG", 0);
 function dbg2($str){$fp=fopen("/tmp/smdebug.txt","a");fwrite($fp,$str . "\n");fclose($fp);}
 
 function esplayer_init() {
-	//if (!is_admin()) {
-		wp_enqueue_script('jquery');
-	//}
+	wp_enqueue_script('jquery');
 }
 add_action('init', 'esplayer_init');
 
@@ -370,8 +368,6 @@ function EsAudioPlayer_title_filter( $title ) {
 
 	echo  "<!--[if lt IE 9]><script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/excanvas.js\"></script><![endif]-->\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/jquery.base64.min.js\"></script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_jqm_ready.js\"></script>\n";
-	echo  "<script src=\"http://code.jquery.com/mobile/1.0b3/jquery.mobile-1.0b3.min.js\"></script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/print_r.js\"></script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/binaryajax.js\"></script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/soundmanager2-jsmin.js\"></script>\n";

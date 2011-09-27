@@ -98,7 +98,6 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 EsAudioPlayer.prototype.init = function() 
 {
 	if (!esplayer_jquery_prepared) return;
-	if (!esplayer_jquery_mobile_prepared) return;
 	clearInterval(this.init_id);
 
 	var that = this;
@@ -121,10 +120,11 @@ EsAudioPlayer.prototype.init = function()
 	if (this.mode=="simple") {
 		this.isIPhone = (new RegExp( "(iPhone|iPod|iPad)", "i" )).test(navigator.userAgent);
 		this.isAndroid = (new RegExp( "(Android)", "i" )).test(navigator.userAgent);
-		this.isSmartphone = (this.isIPhone || this.isAndroid);
+		//this.isSmartphone = (this.isIPhone || this.isAndroid);
+		this.isSmartphone = ('ontouchstart' in window);
 		this.isGecko = navigator.userAgent.match(/SeaMonkey|Firefox/i) && navigator.userAgent.match(/rv:[56].0/i);
 		this.isIE = (new RegExp( "MSIE (3|4|5|6|7|8)", "i" )).test(navigator.userAgent);
-		jQuery('#'+this.id).bind('vmousedown',function(event){
+		jQuery('#'+this.id).bind('mousedown touchstart',function(event){
 			that.onClick(event);
 		});
 	}
@@ -399,8 +399,8 @@ EsAudioPlayer.prototype.onClick = function(ev)
 			this.slider_mouse_ofs_y = py - this.slider_y;
 			this.slider_drag = true;
 			var that = this;
-			jQuery(document).bind("vmousemove", function(ev){that.onMouseMove(ev);});
-			jQuery(document).bind("vmouseup", function(ev){that.onMouseUp(ev);});
+			jQuery(document).bind("mousemove touchmove", function(ev){that.onMouseMove(ev);});
+			jQuery(document).bind("mouseup touchend", function(ev){that.onMouseUp(ev);});
 			return;
 		}
 	}
@@ -418,8 +418,8 @@ EsAudioPlayer.prototype.onClick = function(ev)
 
 EsAudioPlayer.prototype.getEv = function( event )
 {
-	//return( this.isSmartphone ? window.event.targetTouches[ 0 ] :  event );
-	return(  event );
+	return( this.isSmartphone ? window.event.changedTouches[ 0 ] :  event );
+	//return(  event );
 };
 
 
@@ -436,8 +436,7 @@ EsAudioPlayer.prototype.onMouseUp = function (ev)
 {
 	this.mySound[this.nowPlaying].setPosition(this.calc_pos(this.slider_x));
 	var that = this;
-	jQuery(document).unbind("vmousemove");
-	jQuery(document).unbind("vmouseup");
+	jQuery(document).unbind("mousemove touchmove mouseup touchend");
 	this.slider_drag = false;
 }
 	

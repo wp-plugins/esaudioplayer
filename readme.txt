@@ -6,7 +6,7 @@ Requires at least: 3.2.0
 Tested up to: 3.2.1
 Stable tag: 4.3
 
-This is a cross-browser simple audio(MP3) player plugin.
+This is a cross-browser simple audio player (MP3 player) plugin.
 
 == Description ==
 
@@ -44,6 +44,9 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+
+= 1.1.1 =
+* Removed dependency on jQuery-mobile and solved some compatibility issues.
 
 = 1.1.0 =
 * Added color picker to the configuration page.
