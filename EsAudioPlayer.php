@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.1.1
+Version: 1.1.1a
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -11,7 +11,7 @@ License: GPL2
 
 define("ESP_DEBUG", 0);
 
-function dbg2($str){$fp=fopen("/tmp/smdebug.txt","a");fwrite($fp,$str . "\n");fclose($fp);}
+//function dbg2($str){$fp=fopen("/tmp/smdebug.txt","a");fwrite($fp,$str . "\n");fclose($fp);}
 
 function esplayer_init() {
 	wp_enqueue_script('jquery');
@@ -28,81 +28,141 @@ define("LEX_NULL", 100);
 define("LEX_STRING", 101);
 define("LEX_ALNUM", 102);
 define("LEX_WHITE", 103);
-define("LEX_MARK", 104);
-define("LEX_EOL", 105);
+define("LEX_MISC", 105);
+define("LEX_EOL", 106);
 
 define("LEX_PTAG_OPEN", 1000);
 define("LEX_PTAG_CLOSE", 1001);
 define("LEX_CANVASTAG", 1002);
 define("LEX_IMGTAG_OPEN", 1003);
 define("LEX_SRC", 1004);
+define("LEX_GT", 1005);
 
 $esplayer_local_token[0] = array("token"=>"<p>", "case"=>false, "code"=>LEX_PTAG_OPEN);
 $esplayer_local_token[1] = array("token"=>"</p>", "case"=>false, "code"=>LEX_PTAG_CLOSE);
 $esplayer_local_token[2] = array("token"=>"<canvas ", "case"=>false, "code"=>LEX_CANVASTAG);
 $esplayer_local_token[3] = array("token"=>"<img", "case"=>false, "code"=>LEX_IMGTAG_OPEN);
 $esplayer_local_token[4] = array("token"=>"src", "case"=>false, "code"=>LEX_SRC);
+$esplayer_local_token[5] = array("token"=>">", "case"=>false, "code"=>LEX_GT);
+$esplayer_local_token_idx = array();
+$esplayer_max_token_length = 0;
 
 function esplayer_simplelexer(&$str, $pos, &$ret_str)
 {
 	global $esplayer_local_token;
+	global $esplayer_max_token_length;
+	global $esplayer_local_token_idx;
+	$tbuf_len = 0;
+	
+	if ($esplayer_max_token_length==0) {
+		for ($i=0; $i<count($esplayer_local_token); $i++) {
+			if (mb_strlen($esplayer_local_token[$i]["token"]) > $esplayer_max_token_length) {
+				$esplayer_max_token_length = mb_strlen($esplayer_local_token[$i]["token"]);
+				$esplayer_local_token_idx[mb_substr($esplayer_local_token[$i]["token"],0,1)]=1;
+			}
+		}
+	}
+	$tbuf_len = $esplayer_max_token_length*2;
+	if ($tbuf_len<50) $tbuf_len=50;
 
-	if ($pos >= mb_strlen($str)) {
+	$tlen = mb_strlen($str);
+	
+	if ($pos >= $tlen) {
 		return LEX_EOL;
 	}
 
-	$rest_len = mb_strlen(mb_substr($str, $pos));
+	$tmpstr = mb_substr($str, $pos, $tbuf_len);
 
-	for ($i=0; $i<count($esplayer_local_token); $i++) {
-		$tok =$esplayer_local_token[$i]["token"]; 
-		if ($rest_len >= mb_strlen($tok)) {
-			$rtok = mb_substr($str, $pos, mb_strlen($tok));
-			if (($esplayer_local_token[$i]["case"] && $rtok == $tok) || !(mb_stripos($rtok,$tok)===false)) {
-				$ret_str = $rtok;
-				return $esplayer_local_token[$i]["code"];	
-			} 
-		}
-	}
-
-	$mtr_lexer_alnum="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-	$mtr_lexer_mark="/><>/\\!#$%&'()~=~-^~|[]?;:";
 	$mtr_lexer_white=" \t\n\r";
-	if (!(mb_strpos($mtr_lexer_alnum, mb_substr($str,$pos,1))===FALSE)) {
+	if (!(mb_strpos($mtr_lexer_white, mb_substr($tmpstr,0,1))===FALSE)) {
+		$tpos=0;
 		for ($i=$pos; $i<mb_strlen($str); $i++) {
-			if (mb_strpos($mtr_lexer_alnum, mb_substr($str,$i,1))===FALSE) {
+			if (mb_strpos($mtr_lexer_white, mb_substr($tmpstr,$tpos,1))===FALSE) {
 				break;
 			}
-		}
-		$ret_str = mb_substr($str, $pos, $i-$pos);
-		return LEX_ALNUM;
-	}
-
-	if (!(mb_strpos($mtr_lexer_mark, mb_substr($str,$pos,1))===FALSE)) {
-		$ret_str = mb_substr($str, $pos, 1);
-		return LEX_MARK;
-	}
-
-	if (!(mb_strpos($mtr_lexer_white, mb_substr($str,$pos,1))===FALSE)) {
-		for ($i=$pos; $i<mb_strlen($str); $i++) {
-			if (mb_strpos($mtr_lexer_white, mb_substr($str,$i,1))===FALSE) {
-				break;
-			}
+			$tpos ++;
+			if ($tpos >= $tbuf_len-$esplayer_max_token_length) {
+				$tpos = 0;
+				$tmpstr = mb_substr($str,$i+1,$tbuf_len);			
+			}			
 		}
 		$ret_str = mb_substr($str, $pos, $i-$pos);
 		return LEX_WHITE;
 	}
 
-	if (!(mb_strpos("\"", mb_substr($str,$pos,1))===FALSE)) {
+	for ($i=0; $i<count($esplayer_local_token); $i++) {
+		$tok =$esplayer_local_token[$i]["token"]; 
+		$rtok = mb_substr($tmpstr, 0, mb_strlen($tok));
+		if (($esplayer_local_token[$i]["case"] && $rtok == $tok) || !(mb_stripos($rtok,$tok)===false)) {
+			$ret_str = $rtok;
+			return $esplayer_local_token[$i]["code"];
+		} 
+	}
+
+	$mtr_lexer_alnum="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+	if (!(mb_strpos($mtr_lexer_alnum, mb_substr($tmpstr,0,1))===FALSE)) {
+		$tpos=0;
+		for ($i=$pos; $i<mb_strlen($str); $i++) {
+			if (mb_strpos($mtr_lexer_alnum, mb_substr($tmpstr,$tpos,1))===FALSE) {
+				break;
+			}
+			$tpos++;
+			if ($tpos >= $tbuf_len-$esplayer_max_token_length) {
+				$tpos = 0;
+				$tmpstr = mb_substr($str,$i+1,$tbuf_len);			
+			}			
+		}
+		$ret_str = mb_substr($str, $pos, $i-$pos);
+		return LEX_ALNUM;
+	}
+
+	if (!(mb_strpos("\"", mb_substr($tmpstr,0,1))===FALSE)) {
+		$tpos=1;
 		for ($i=$pos+1; $i<mb_strlen($str); $i++) {
-			if (mb_substr($str,$i,1) == "\"") {
+			if (mb_substr($tmpstr,$tpos,1) == "\"") {
 				$i++;
 				break;
+			}
+			$tpos++;
+			if ($tpos >= $tbuf_len-$esplayer_max_token_length) {
+				$tpos = 0;
+				$tmpstr = mb_substr($str,$i+1,$tbuf_len);			
 			}
 		}
 		$ret_str = mb_substr($str, $pos, $i-$pos);
 		return LEX_STRING;
 	}
-		
+	
+	$tpos=0;
+	for ($i=$pos; $i<$tlen; $i++) {
+		$chr = mb_substr($tmpstr,$tpos,1);
+		if (!(mb_strpos($mtr_lexer_white, $chr)===FALSE)) {
+			break;
+		}
+		if ($chr=="\"") {
+			break;
+		}
+		if ($esplayer_local_token_idx[$chr]==1) {
+			$flg = 0;
+			for ($j=0; $j<count($esplayer_local_token); $j++) {
+				$tok =$esplayer_local_token[$j]["token"]; 
+				$rtok = mb_substr($tmpstr, $tpos, mb_strlen($tok));
+				if (($esplayer_local_token[$j]["case"] && $rtok == $tok) || !(mb_stripos($rtok,$tok)===false)) {
+					$flg=1;
+					break;
+				} 
+			}
+			if ($flg) break;
+		}
+		$tpos ++;
+		if ($tpos >= $tbuf_len-$esplayer_max_token_length) {
+			$tpos = 0;
+			$tmpstr = mb_substr($str,$i+1,$tbuf_len);			
+		}
+	}
+	
+	$ret_str = mb_substr($str,$pos,$i-$pos);
+	
 	return LEX_NULL;
 }
 
@@ -118,12 +178,9 @@ function esplayer_lex(&$content,&$lex_pos, &$token)
 	for (;;) {
 		$ret =  esplayer_simplelexer($content, $lex_pos, $token);
 		$lex_pos += mb_strlen($token);
-//echo strlen($content)." ". $lex_pos . "  " . $ret . "  " . /*$token .*/ "<br>";
 		if ($ret == LEX_WHITE) {
 			continue;
 		}
-		//echo $lex_pos." ".$ret . " " . $token . "<br>";
-//echo "(".$token.")";
 		return $ret;
 	}
 }
@@ -137,107 +194,6 @@ function EsAudioPlayer_filter_0($raw_text)
 add_filter('the_content',  "EsAudioPlayer_filter_0", 10) ;
 
 
-function EsAudioPlayer_filter_pdel($raw_text) 
-{
-	$ret = "";
-
-	$cur_pos = 0;
-	$lex_pos = 0;
-	$token="";
-	$p_open_pos = -1;
-	$p_close_pos = -1;
-	$es_pos = -1;
-
-	for ( $i=0 ; $i<99999 ; $i++ ) {
-		$token_code = esplayer_lex($raw_text, $lex_pos, $token);
-		if ($token_code == LEX_EOL) {
-			$ret = $ret . mb_substr($raw_text, $cur_pos);   // output final part of text
-			break;
-		}
-		if ($token_code == LEX_PTAG_OPEN) {
-			$p_open_pos = $lex_pos - mb_strlen("<p>");
-		}
-		if ($token_code == LEX_CANVASTAG) {
-			$es_pos = $lex_pos - mb_strlen("<canvas ");
-		}
-		if ($token_code == LEX_PTAG_CLOSE) {
-			$p_close_pos = $lex_pos - mb_strlen("</p>");
-			if ($p_open_pos >= 0 && $p_open_pos < $es_pos && $es_pos < $p_close_pos) {
-				$ret = $ret . mb_substr($raw_text, $cur_pos, $p_open_pos-$cur_pos);
-				$ret = $ret . "<div>";
-				$ret = $ret . mb_substr($raw_text, $p_open_pos+3, $p_close_pos-$p_open_pos-3);
-				$ret = $ret . "</div>";
-				$cur_pos = $lex_pos;
-			}
-		}
-	}
-
-	return $ret;
-}
-add_filter('the_content',  "EsAudioPlayer_filter_pdel", 15) ;
-
-
-function EsAudioPlayer_filter($raw_text) {
-	$cur_pos = 0;
-	$lex_pos = 0;
-	$token="";
-
-	$ret = "";
-	$flg_inner_img = false;
-	$flg_src = false;
-	$player_id = -1;
-
-	global $esplayer_imgs_num;
-	global $esplayer_imgs;
-	global $esplayer_imgs_player_number;
-
-	for ( $i=0 ; $i<99999 ; $i++ ) {
-		$token_code = esplayer_lex($raw_text, $lex_pos, $token);
-		if ($token_code == LEX_EOL) {
-			$ret = $ret . mb_substr($raw_text, $cur_pos);   // output final part of text
-			break;
-		}
-		if ($token_code == LEX_MARK && $token==">") {  // img tag closing detection
-			if ($flg_inner_img) {
-				$ret = $ret . mb_substr($raw_text, $cur_pos, $lex_pos - 1 - $cur_pos);
-
-				// if the image is connected to audio, then the onClick attribute will be added to the img tag.
-				if (mb_substr($ret, mb_strlen($ret)-1,1) == "/") {
-					$ret = mb_substr($ret, 0, mb_strlen($ret)-1);
-				}
-				if ($player_id >= 0) {
-					//$ret = $ret . "id=\"img_esplayer_".$player_id."\" onClick=\"alert('a');\"";
-					$ret = $ret . "id=\"img_esplayer_".$player_id."\" onClick=\"javascript:esplayervar" . $player_id. ".func_play_stop();return false;\"";
-				}
-				$player_id = -1;
-				$ret = $ret . "/>";
-				$cur_pos = $lex_pos;
-				$flg_inner_img = false;
-				continue;
-			}
-		}
-		if ($token_code == LEX_IMGTAG_OPEN) {// <img> start
-			$flg_inner_img = true;
-		}
-		if ($flg_inner_img && $token_code==LEX_SRC) {
-			$flg_src = true;
-		}
-		if ($flg_src && $token_code==LEX_STRING) {  // the string enclosed by double quotations after "src" is an url.
-			$flg_src = false;
-			$url = mb_ereg_replace('"', '', $token);
-			for ($j=0; $j<$esplayer_imgs_num; $j++) {
-				if ($url == $esplayer_imgs[$j]) {
-					$player_id = $esplayer_imgs_player_number[$j];
-					$flg_del_atag = true;
-					break;
-				}
-			}
-		}
-	}
-
-	return $ret ;
-}
-add_filter('the_content',  "EsAudioPlayer_filter", 15) ;
 
 $esplayer_script = "";
 $esplayer_mode = "x";
@@ -252,7 +208,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	do_shortcode($content);
 	$url = "";
-	$img = "";
+	$img_id = "";
 	$timetable_id="";
 	$width="";
 	$height="";
@@ -281,15 +237,10 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	if (is_numeric($height)) $height = $height . "px";
 	if (is_numeric($vp)) $vp = $vp . "px";
 
-	if ($img != "") {
-		$esplayer_imgs[$esplayer_imgs_num] = $img;
-		$esplayer_imgs_player_number[$esplayer_imgs_num++] = $player_number;
-	}
-
 	$id = "esplayer_" . (string)($player_number);
 	$js_var='esplayervar' . (string)($player_number);
 
-	if ($img == "" && $timetable_id == "") {
+	if ($img_id == "" && $timetable_id == "") {
 		$esplayer_mode="simple";
 		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\"></canvas></div>";
 	} else if ($timetable_id != "") {
@@ -307,7 +258,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$esplayer_script = $esplayer_script . "var " . $js_var . ";\njQuery(document).ready(function() {\n";
 
 	if ($esplayer_mode=="simple") {
-		$esplayer_script = $esplayer_script . "ReplaceContainingCanvasPtag2div('".$id."_tmpspan');\n";
+		//$esplayer_script = $esplayer_script . "ReplaceContainingCanvasPtag2div('".$id."_tmpspan');\n";
 	}
 	$esplayer_script = $esplayer_script . $js_var . " = new EsAudioPlayer(\"" 
 		. $esplayer_mode
@@ -332,6 +283,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 		. ', "'
 		. $duration 
 		. '", "' 
+		. $img_id
+		. '", "' 
 		. $artist_utf8 
 		. '", "' 
 		. $title_utf8 
@@ -347,6 +300,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 add_shortcode('esplayer', 'EsAudioPlayer_shortcode',12);
 
 function EsAudioPlayer_filter_2($raw_text) {
+	global $player_number;
+	if ($player_number == 1) return $raw_text;
 	global $esplayer_script;
 	$ret = $raw_text . "<script type=\"text/javascript\">\n" . $esplayer_script . "</script>\n";
 	$esplayer_script = "";
@@ -375,26 +330,6 @@ function EsAudioPlayer_title_filter( $title ) {
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes.js\"></script>\n";
 	echo "<script type=\"text/javascript\">\nvar esp_tt_data_encoded='';\nvar esp_tt_data; </script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";
-	echo	"<script type=\"text/javascript\">\n".
-		"function ReplaceContainingCanvasPtag2div(id)\n" . 
-		"{return;\n" . 
-		"	var elm = jQuery('#'+id);\n" .  
-		"	var i;\n" .  
-		"	for (i=0; i<999; i++) {\n" . 
-		"		elm = elm.parent();\n" . 
-		"		if (elm.get(0).tagName.toLowerCase() == 'p') {\n" . 
-		"			var html = elm.html(); \n" .
-		"			var pr = jQuery(elm).parent();".
-		"			//elm.replaceWith(\"<div style=\\\"border:3px solid #ff0000\\\">\"+html+\"</div>\"); \n".
-		"			//alert(jQuery(pr).html());\n".
-		"			break; \n".
-		"		} else if (elm.get(0).tagName.toLowerCase() == 'body') {\n" . 
-		"			break;\n" . 
-		"		}\n" . 
-		"	}\n" . 
-		"}\n".
-		"</script>\n";
-
 } 
 
 
@@ -598,8 +533,8 @@ memo
 1. EsAudioPlayer_filter_tt (priority 9) reads time tables.
 2. EsAudioPlayer_filter_0 (priority 10) deletes white spaces in the series of shortcords.
 3. EsAudioPlayer_shortcode (priority 12) makes code of declaration of class instances of players.
-4. EsAudioPlayer_filter_pdel (priority 15) replaces <p></p> tags encloseing canvas tags to <div></div> so that IE (explorercanvas.js) can display canvases.
-5. EsAudioPlayer_filter (priority 15) makes markups for image-click-mode.
+4. (deleted)EsAudioPlayer_filter_pdel (priority 15) replaces <p></p> tags encloseing canvas tags to <div></div> so that IE (explorercanvas.js) can display canvases.
+5. (deleted)EsAudioPlayer_filter (priority 15) makes markups for image-click-mode.
 6. EsAudioPlayer_filter_2 (priority 99) makes code of declaration of class instances of players at the end of the article.
 7. EsAudioPlayer_footer_filter makes code of obtaining mime64-encoded time-table JSON data
 */

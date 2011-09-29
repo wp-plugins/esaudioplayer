@@ -72,7 +72,7 @@ var EsAudioPlayer_tt = function(esp_obj) {
 
 	jQuery(this.box_id).css('cursor','pointer');
 
-	jQuery(this.box_id).bind(this.esp_obj.isIPhone ? 'touchstart' : 'mousedown', function(event){
+	jQuery(this.box_id).bind(this.esp_obj.isSmartphone ? 'touchstart' : 'mousedown', function(event){
 		if (that.esp_obj.play === false) {
 			this.that = this;
 			that.launch_tt(that.tt_id_list[0]);

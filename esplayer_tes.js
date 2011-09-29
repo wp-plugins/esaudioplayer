@@ -39,7 +39,7 @@ jQuery(document).ready(function(){
 });
 
 
-var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, border_img, loop, duration, artist, title) {
+var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, border_img, loop, duration, img_id, artist, title) {
 	this.basecolor_play = '';
 	this.symbolcolor_play = '';
 	this.basecolor_stop = '';
@@ -62,6 +62,7 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	this.canvas = 0;
 	this.that = this;
 	this.id = id;
+	this.img_id = img_id;
 	this.width_org = width;
 	this.height_org = height;
 	this.width = width;
@@ -99,7 +100,6 @@ EsAudioPlayer.prototype.init = function()
 {
 	if (!esplayer_jquery_prepared) return;
 	clearInterval(this.init_id);
-
 	var that = this;
 	this.GetSizeInPx();
 
@@ -124,7 +124,7 @@ EsAudioPlayer.prototype.init = function()
 		this.isSmartphone = ('ontouchstart' in window);
 		this.isGecko = navigator.userAgent.match(/SeaMonkey|Firefox/i) && navigator.userAgent.match(/rv:[56].0/i);
 		this.isIE = (new RegExp( "MSIE (3|4|5|6|7|8)", "i" )).test(navigator.userAgent);
-		jQuery('#'+this.id).bind('mousedown touchstart',function(event){
+		jQuery('#'+this.id).bind(this.isSmartphone ? 'touchstart':'mousedown' ,function(event){
 			that.onClick(event);
 		});
 	}
@@ -150,6 +150,17 @@ EsAudioPlayer.prototype.init = function()
 		this.tt_id_list = this.sURLs[0].split(',');
 		this.tt_obj = new EsAudioPlayer_tt(this);
 	} else {
+	}
+
+	if (this.mode=="imgclick") {
+		var el = jQuery('#'+this.img_id);
+		if (jQuery('#'+this.img_id).parent().get(0).tagName.toUpperCase() == "A") {
+			jQuery('#'+this.img_id).parent().contents().unwrap();
+		}
+
+		jQuery(el).bind(that.isSmartphone ? "touchstart":"mousedown", function(event){
+			that.func_play_stop(); 
+		});
 	}
 
 	// sound initialization
@@ -399,8 +410,8 @@ EsAudioPlayer.prototype.onClick = function(ev)
 			this.slider_mouse_ofs_y = py - this.slider_y;
 			this.slider_drag = true;
 			var that = this;
-			jQuery(document).bind("mousemove touchmove", function(ev){that.onMouseMove(ev);});
-			jQuery(document).bind("mouseup touchend", function(ev){that.onMouseUp(ev);});
+			jQuery(document).bind(this.isSmartphone?"touchmove":"mousemove", function(ev){that.onMouseMove(ev);});
+			jQuery(document).bind(this.isSmartphone?"touchend":"mouseup", function(ev){that.onMouseUp(ev);});
 			return;
 		}
 	}
@@ -693,7 +704,7 @@ EsAudioPlayer.prototype.func_stop = function()
 	this.play = false;
 	this.pause = false;
 
-	if (this.isIPhone) {  // avoid sm2's bug
+	if (0) {  // avoid sm2's bug
 		var url = this.mySound[this.nowPlaying].url;
 		var id = this.mySound[this.nowPlaying].sID;
 		this.mySound[this.nowPlaying].destruct();

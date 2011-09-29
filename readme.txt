@@ -45,6 +45,10 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 
 == Changelog ==
 
+= 1.2.0 =
+* Changed usage of 'image mode'. Now ID of the image must be provided instead of its URL.
+* Improved performance of procedure of before displaying the player button.
+
 = 1.1.1 =
 * Removed dependency on jQuery-mobile and solved some compatibility issues.
 
