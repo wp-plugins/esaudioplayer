@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.2.0
+Version: 1.3.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -198,13 +198,89 @@ add_filter('the_content',  "EsAudioPlayer_filter_0", 10) ;
 $esplayer_script = "";
 $esplayer_mode = "x";
 
+function EsAudioPlayer_read_accessibility_setting()
+{
+	global $esplayer_acc_text_enable;
+	global $esplayer_acc_msg_download;
+	global $esplayer_acc_scr_enable;
+	global $esplayer_acc_scr_basic_btns;
+	global $esplayer_acc_scr_msg_play_btn;
+	global $esplayer_acc_scr_msg_stop_btn;
+	global $esplayer_acc_scr_msg_playstop_btn;
+	global $esplayer_acc_scr_msg_playpause_btn;
+	global $esplayer_acc_scr_fw_enable;
+	global $esplayer_acc_scr_fw_amount;
+	global $esplayer_acc_scr_fw_unit;
+	global $esplayer_acc_scr_fw_msg;
+	global $esplayer_acc_scr_rew_enable;
+	global $esplayer_acc_scr_rew_amount;
+	global $esplayer_acc_scr_rew_unit;
+	global $esplayer_acc_scr_rew_msg;
+	global $esplayer_acc_scr_ffw_enable;
+	global $esplayer_acc_scr_ffw_amount;
+	global $esplayer_acc_scr_ffw_unit;
+	global $esplayer_acc_scr_ffw_msg;
+	global $esplayer_acc_scr_frew_enable;
+	global $esplayer_acc_scr_frew_amount;
+	global $esplayer_acc_scr_frew_unit;
+	global $esplayer_acc_scr_frew_msg;
+	$esplayer_acc_text_enable = get_option("esaudioplayer_acc_text_enable", "0");
+	$esplayer_acc_msg_download = get_option("esaudioplayer_acc_msg_download", "download the audio");
+	$esplayer_acc_scr_enable = get_option("esaudioplayer_acc_scr_enable", "0");
+	$esplayer_acc_scr_basic_btns = get_option("esaudioplayer_acc_scr_basic_btns", "playstop");
+	$esplayer_acc_scr_msg_play_btn = get_option("esaudioplayer_acc_scr_msg_play_btn", "play");
+	$esplayer_acc_scr_msg_stop_btn = get_option("esaudioplayer_acc_scr_msg_stop_btn", "stop");
+	$esplayer_acc_scr_msg_playstop_btn = get_option("esaudioplayer_acc_scr_msg_playstop_btn", "play or stop");
+	$esplayer_acc_scr_msg_playpause_btn = get_option("esaudioplayer_acc_scr_msg_playpause_btn", "play or pause");
+	$esplayer_acc_scr_fw_enable = get_option("esaudioplayer_acc_scr_fw_enable", "1");
+	$esplayer_acc_scr_fw_amount = get_option("esaudioplayer_acc_scr_fw_amount", "15");
+	$esplayer_acc_scr_fw_unit = get_option("esaudioplayer_acc_scr_fw_unit", "sec");
+	$esplayer_acc_scr_fw_msg = get_option("esaudioplayer_acc_scr_fw_msg", "forward 15 seconds");
+	$esplayer_acc_scr_rew_enable = get_option("esaudioplayer_acc_scr_rew_enable", "1");
+	$esplayer_acc_scr_rew_amount = get_option("esaudioplayer_acc_scr_rew_amount", "15");
+	$esplayer_acc_scr_rew_unit = get_option("esaudioplayer_acc_scr_rew_unit", "sec");
+	$esplayer_acc_scr_rew_msg = get_option("esaudioplayer_acc_scr_rew_msg", "rewind 15 seconds");
+	$esplayer_acc_scr_ffw_enable = get_option("esaudioplayer_acc_scr_ffw_enable", "0");
+	$esplayer_acc_scr_ffw_amount = get_option("esaudioplayer_acc_scr_ffw_amount", "10");
+	$esplayer_acc_scr_ffw_unit = get_option("esaudioplayer_acc_scr_ffw_unit", "pct");
+	$esplayer_acc_scr_ffw_msg = get_option("esaudioplayer_acc_scr_ffw_msg", "forward 10%");
+	$esplayer_acc_scr_frew_enable = get_option("esaudioplayer_acc_scr_frew_enable", "0");
+	$esplayer_acc_scr_frew_amount = get_option("esaudioplayer_acc_scr_frew_amount", "10");
+	$esplayer_acc_scr_frew_unit = get_option("esaudioplayer_acc_scr_frew_unit", "pct");
+	$esplayer_acc_scr_frew_msg = get_option("esaudioplayer_acc_scr_frew_msg", "rewind 10%");
 
+}
+EsAudioPlayer_read_accessibility_setting();
 
 function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $player_number;
 	global $esplayer_imgs_num, $esplayer_imgs, $esplayer_imgs_player_number;
 	global $esplayer_script;
 	global $esplayer_mode;
+	global $esplayer_acc_text_enable;
+	global $esplayer_acc_msg_download;
+	global $esplayer_acc_scr_enable;
+	global $esplayer_acc_scr_basic_btns;
+	global $esplayer_acc_scr_msg_play_btn;
+	global $esplayer_acc_scr_msg_stop_btn;
+	global $esplayer_acc_scr_msg_playstop_btn;
+	global $esplayer_acc_scr_msg_playpause_btn;
+	global $esplayer_acc_scr_fw_enable;
+	global $esplayer_acc_scr_fw_amount;
+	global $esplayer_acc_scr_fw_unit;
+	global $esplayer_acc_scr_fw_msg;
+	global $esplayer_acc_scr_rew_enable;
+	global $esplayer_acc_scr_rew_amount;
+	global $esplayer_acc_scr_rew_unit;
+	global $esplayer_acc_scr_rew_msg;
+	global $esplayer_acc_scr_ffw_enable;
+	global $esplayer_acc_scr_ffw_amount;
+	global $esplayer_acc_scr_ffw_unit;
+	global $esplayer_acc_scr_ffw_msg;
+	global $esplayer_acc_scr_frew_enable;
+	global $esplayer_acc_scr_frew_amount;
+	global $esplayer_acc_scr_frew_unit;
+	global $esplayer_acc_scr_frew_msg;
 
 	do_shortcode($content);
 	$url = "";
@@ -242,7 +318,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	if ($img_id == "" && $timetable_id == "") {
 		$esplayer_mode="simple";
-		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\"></canvas></div>";
+		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\" style=\"cursor:pointer;\"></canvas></div>";
 	} else if ($timetable_id != "") {
 		$esplayer_mode="slideshow";
 		$ret = "<div id=\"" . $id . "_tmpspan\" style=\"width:".$width."; height:".$height."; background-color:".$bgcolor."; border:".$border_box.";\">&nbsp;</div>";
@@ -250,6 +326,39 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	} else {
 		$esplayer_mode="imgclick";
 		$ret = "";
+	}
+	if ($esplayer_acc_text_enable == "1") {
+		$ret .= "<div style=\"display:none;\"><a href=\"" .$url. "\">" . $esplayer_acc_msg_download . "</a></div>";
+	}
+	if ($esplayer_acc_scr_enable == "1") {
+		$ret .= "<div style=\"position:absolute;left:-3000px;\">";
+		if ($esplayer_acc_scr_basic_btns == "playstop") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playstop_btn . "' onclick=\"".$js_var.".func_acc_play_stop();return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_basic_btns == "play+stop") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_play_btn . "' onclick=\"".$js_var.".func_acc_play();return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_basic_btns == "playpause+stop") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playpause_btn . "' onclick=\"".$js_var.".func_acc_play_pause();return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_basic_btns == "play+stop" || $esplayer_acc_scr_basic_btns == "playpause+stop") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_stop_btn . "' onclick=\"".$js_var.".func_acc_stop();return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_fw_enable=="1") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_fw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_fw_amount.",'".$esplayer_acc_scr_fw_unit."');return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_rew_enable=="1") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_rew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_rew_amount.",'".$esplayer_acc_scr_rew_unit."');return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_ffw_enable=="1") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_ffw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_ffw_amount.",'".$esplayer_acc_scr_ffw_unit."');return -1;\"/>";
+		}
+		if ($esplayer_acc_scr_frew_enable=="1") {
+			$ret .= "<input type='button' title='" . $esplayer_acc_scr_frew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_frew_amount.",'".$esplayer_acc_scr_frew_unit."');return -1;\"/>";
+		}
+
+		$ret .= "</div>";
+
 	}
 
 	$title_utf8="";
@@ -327,7 +436,7 @@ function EsAudioPlayer_title_filter( $title ) {
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/binaryajax.js\"></script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/soundmanager2-jsmin.js\"></script>\n";
 	echo  "<script type=\"text/javascript\"> var esAudioPlayer_plugin_URL = '" . $esAudioPlayer_plugin_URL . "'; </script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes.js\"></script>\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";
 	echo "<script type=\"text/javascript\">\nvar esp_tt_data_encoded='';\nvar esp_tt_data; </script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";
 } 
@@ -341,10 +450,74 @@ function esaudioplayer_plugin_menu()
 	add_submenu_page('plugins.php', 'EsAudioPlayer Configuration', 'EsAudioPlayer', 'manage_options', 'esaudioplayer-submenu-handle', 'esaudioplayer_magic_function'); 
 }
 
+$esaudioplayer_col_ar[0] = '#esaudioplayer_basecolor_play';
+$esaudioplayer_col_ar[1] = '#esaudioplayer_symbolcolor_play';
+$esaudioplayer_col_ar[2] = '#esaudioplayer_basecolor_stop';
+$esaudioplayer_col_ar[3] = '#esaudioplayer_symbolcolor_stop';
+$esaudioplayer_col_ar[4] = '#esaudioplayer_basecolor_pause';
+$esaudioplayer_col_ar[5] = '#esaudioplayer_symbolcolor_pause';
+$esaudioplayer_col_ar[6] = '#esaudioplayer_slidercolor_line';
+$esaudioplayer_col_ar[7] = '#esaudioplayer_slidercolor_knob';
+$esaudioplayer_col_ar[8] = '#esaudioplayer_shadowcolor';
+
+
+function esaudioplayer_farbtastic_prepare($ar)
+{
+	$scr = "";
+	for ($i=0; $i<count($ar); $i++) {
+		$id = 'colorpicker'.$i;
+		echo "<div id=\"" . $id . "\" style=\"position:absolute;\"></div>";
+		$scr .= "			jQuery('#".$id."').farbtastic('".$ar[$i]."').hide();\n";
+		$scr .= "			SetPosition('".$ar[$i]."','#".$id."');\n";
+		$scr .= "			jQuery('".$ar[$i]."').focus(function(){jQuery('#".$id."').show();});\n";
+		$scr .= "			jQuery('".$ar[$i]."').blur(function(){jQuery('#".$id."').hide();});\n";
+	}
+	echo 	"	<script type=\"text/javascript\">\n		jQuery(document).ready(function(){\n" . $scr . "		});\n".
+		"		function SetPosition(el, cl)\n".
+		"		{\n".
+		"			var left = 0;\n".
+		"			var top = 0;\n".
+		"			left = jQuery(el).offset().left + jQuery(el).width()*1.2;\n".
+		"			top = jQuery(el).offset().top -jQuery(cl).height()/2;\n".
+		"			var height = jQuery(el).height();\n".
+		"			if (!isNaN(parseInt(jQuery(el).css('padding-top')))) height += parseInt(jQuery(el).css('padding-top'));\n".
+		"			if (!isNaN(parseInt(jQuery(el).css('margin-top')))) height += parseInt(jQuery(el).css('margin-top'));\n".
+		"			var y = Math.floor(top) + height;\n".
+		"			var x = Math.floor(left);\n".
+		"			jQuery(cl).css('top',y+\"px\");\n".
+		"			jQuery(cl).css('left',x+\"px\");\n".
+		"		}\n".
+		"	</script>\n";
+}
 
 /*  設定画面出力  */
 function esaudioplayer_magic_function()
 {
+	global $esplayer_acc_text_enable;
+	global $esplayer_acc_msg_download;
+	global $esplayer_acc_scr_enable;
+	global $esplayer_acc_scr_basic_btns;
+	global $esplayer_acc_scr_msg_play_btn;
+	global $esplayer_acc_scr_msg_stop_btn;
+	global $esplayer_acc_scr_msg_playstop_btn;
+	global $esplayer_acc_scr_msg_playpause_btn;
+	global $esplayer_acc_scr_fw_enable;
+	global $esplayer_acc_scr_fw_amount;
+	global $esplayer_acc_scr_fw_unit;
+	global $esplayer_acc_scr_fw_msg;
+	global $esplayer_acc_scr_rew_enable;
+	global $esplayer_acc_scr_rew_amount;
+	global $esplayer_acc_scr_rew_unit;
+	global $esplayer_acc_scr_rew_msg;
+	global $esplayer_acc_scr_ffw_enable;
+	global $esplayer_acc_scr_ffw_amount;
+	global $esplayer_acc_scr_ffw_unit;
+	global $esplayer_acc_scr_ffw_msg;
+	global $esplayer_acc_scr_frew_enable;
+	global $esplayer_acc_scr_frew_amount;
+	global $esplayer_acc_scr_frew_unit;
+	global $esplayer_acc_scr_frew_msg;
+
 	/*  Save Changeボタン押下でコールされた場合、$_POSTに格納された設定情報を保存  */
 	if ( isset($_POST['updateEsAudioPlayerSetting'] ) ) {
 		echo '<div id="message" class="updated fade"><p><strong>Options saved.</strong></p></div>';
@@ -359,7 +532,36 @@ function esaudioplayer_magic_function()
 		update_option('esaudioplayer_shadowcolor', $_POST['esaudioplayer_shadowcolor']);
 		update_option('esaudioplayer_shadowsize', $_POST['esaudioplayer_shadowsize']);
 
+		update_option('esaudioplayer_acc_text_enable', $_POST['esaudioplayer_acc_text_enable']);
+		update_option('esaudioplayer_acc_text_enable', $_POST['esaudioplayer_acc_text_enable']);
+		update_option('esaudioplayer_acc_msg_download', $_POST['esaudioplayer_acc_msg_download']);
+		update_option('esaudioplayer_acc_scr_enable', $_POST['esaudioplayer_acc_scr_enable']);
+		update_option('esaudioplayer_acc_scr_basic_btns', $_POST['esaudioplayer_acc_scr_basic_btns']);
+		update_option('esaudioplayer_acc_scr_msg_play_btn', $_POST['esaudioplayer_acc_scr_msg_play_btn']);
+		update_option('esaudioplayer_acc_scr_msg_stop_btn', $_POST['esaudioplayer_acc_scr_msg_stop_btn']);
+		update_option('esaudioplayer_acc_scr_msg_playstop_btn', $_POST['esaudioplayer_acc_scr_msg_playstop_btn']);
+		update_option('esaudioplayer_acc_scr_msg_playpause_btn', $_POST['esaudioplayer_acc_scr_msg_playpause_btn']);
+
+		update_option('esaudioplayer_acc_scr_fw_enable', isset($_POST['esaudioplayer_acc_scr_fw_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_fw_amount', $_POST['esaudioplayer_acc_scr_fw_amount']);
+		update_option('esaudioplayer_acc_scr_fw_unit', $_POST['esaudioplayer_acc_scr_fw_unit']);
+		update_option('esaudioplayer_acc_scr_fw_msg', $_POST['esaudioplayer_acc_scr_fw_msg']);
+		update_option('esaudioplayer_acc_scr_rew_enable', isset($_POST['esaudioplayer_acc_scr_rew_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_rew_amount', $_POST['esaudioplayer_acc_scr_rew_amount']);
+		update_option('esaudioplayer_acc_scr_rew_unit', $_POST['esaudioplayer_acc_scr_rew_unit']);
+		update_option('esaudioplayer_acc_scr_rew_msg', $_POST['esaudioplayer_acc_scr_rew_msg']);
+		update_option('esaudioplayer_acc_scr_ffw_enable', isset($_POST['esaudioplayer_acc_scr_ffw_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_ffw_amount', $_POST['esaudioplayer_acc_scr_ffw_amount']);
+		update_option('esaudioplayer_acc_scr_ffw_unit', $_POST['esaudioplayer_acc_scr_ffw_unit']);
+		update_option('esaudioplayer_acc_scr_ffw_msg', $_POST['esaudioplayer_acc_scr_ffw_msg']);
+		update_option('esaudioplayer_acc_scr_frew_enable', isset($_POST['esaudioplayer_acc_scr_frew_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_frew_amount', $_POST['esaudioplayer_acc_scr_frew_amount']);
+		update_option('esaudioplayer_acc_scr_frew_unit', $_POST['esaudioplayer_acc_scr_frew_unit']);
+		update_option('esaudioplayer_acc_scr_frew_msg', $_POST['esaudioplayer_acc_scr_frew_msg']);
 	}
+
+	global $esaudioplayer_col_ar;
+	esaudioplayer_farbtastic_prepare($esaudioplayer_col_ar);
 
 	$plugin = plugin_basename('EsAudioPlayer'); $plugin = dirname(__FILE__);
 	?>
@@ -376,121 +578,201 @@ function esaudioplayer_magic_function()
 
 
 	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript">
-		jQuery(document).ready(function(){
-			jQuery('#esaudioplayer_basecolor_play').focus(function(){jQuery('#colorpicker1').show();});
-
-			jQuery('#colorpicker1').farbtastic('#esaudioplayer_basecolor_play').hide();
-			jQuery('#colorpicker2').farbtastic('#esaudioplayer_symbolcolor_play').hide();
-			jQuery('#colorpicker3').farbtastic('#esaudioplayer_basecolor_stop').hide();
-			jQuery('#colorpicker4').farbtastic('#esaudioplayer_symbolcolor_stop').hide();
-			jQuery('#colorpicker5').farbtastic('#esaudioplayer_basecolor_pause').hide();
-			jQuery('#colorpicker6').farbtastic('#esaudioplayer_symbolcolor_pause').hide();
-			jQuery('#colorpicker7').farbtastic('#esaudioplayer_slidercolor_line').hide();
-			jQuery('#colorpicker8').farbtastic('#esaudioplayer_slidercolor_knob').hide();
-			jQuery('#colorpicker9').farbtastic('#esaudioplayer_shadowcolor').hide();
-
-			SetPosition('#esaudioplayer_basecolor_play','#colorpicker1');
-			SetPosition('#esaudioplayer_symbolcolor_play','#colorpicker2');
-			SetPosition('#esaudioplayer_basecolor_stop','#colorpicker3');
-			SetPosition('#esaudioplayer_symbolcolor_stop','#colorpicker4');
-			SetPosition('#esaudioplayer_basecolor_pause','#colorpicker5');
-			SetPosition('#esaudioplayer_symbolcolor_pause','#colorpicker6');
-			SetPosition('#esaudioplayer_slidercolor_line','#colorpicker7');
-			SetPosition('#esaudioplayer_slidercolor_knob','#colorpicker8');
-			SetPosition('#esaudioplayer_shadowcolor','#colorpicker9');
-
-			jQuery('#esaudioplayer_basecolor_play').focus(function(){jQuery('#colorpicker1').show();});
-			jQuery('#esaudioplayer_symbolcolor_play').focus(function(){jQuery('#colorpicker2').show();});
-			jQuery('#esaudioplayer_basecolor_stop').focus(function(){jQuery('#colorpicker3').show();});
-			jQuery('#esaudioplayer_symbolcolor_stop').focus(function(){jQuery('#colorpicker4').show();});
-			jQuery('#esaudioplayer_basecolor_pause').focus(function(){jQuery('#colorpicker5').show();});
-			jQuery('#esaudioplayer_symbolcolor_pause').focus(function(){jQuery('#colorpicker6').show();});
-			jQuery('#esaudioplayer_slidercolor_line').focus(function(){jQuery('#colorpicker7').show();});
-			jQuery('#esaudioplayer_slidercolor_knob').focus(function(){jQuery('#colorpicker8').show();});
-			jQuery('#esaudioplayer_shadowcolor').focus(function(){jQuery('#colorpicker9').show();});
-
-			jQuery('#esaudioplayer_basecolor_play').blur(function(){jQuery('#colorpicker1').hide();});
-			jQuery('#esaudioplayer_symbolcolor_play').blur(function(){jQuery('#colorpicker2').hide();});
-			jQuery('#esaudioplayer_basecolor_stop').blur(function(){jQuery('#colorpicker3').hide();});
-			jQuery('#esaudioplayer_symbolcolor_stop').blur(function(){jQuery('#colorpicker4').hide();});
-			jQuery('#esaudioplayer_basecolor_pause').blur(function(){jQuery('#colorpicker5').hide();});
-			jQuery('#esaudioplayer_symbolcolor_pause').blur(function(){jQuery('#colorpicker6').hide();});
-			jQuery('#esaudioplayer_slidercolor_line').blur(function(){jQuery('#colorpicker7').hide();});
-			jQuery('#esaudioplayer_slidercolor_knob').blur(function(){jQuery('#colorpicker8').hide();});
-			jQuery('#esaudioplayer_shadowcolor').blur(function(){jQuery('#colorpicker9').hide();});
-		});
-		function SetPosition(el, cl)
-		{
-			var left = 0;
-			var top = 0;
-			left = jQuery(el).offset().left + jQuery(el).width()*1.2;
-			top = jQuery(el).offset().top -jQuery(cl).height()/2;
-			var height = jQuery(el).height();
-			if (!isNaN(parseInt(jQuery(el).css('padding-top')))) height += parseInt(jQuery(el).css('padding-top'));
-			if (!isNaN(parseInt(jQuery(el).css('margin-top')))) height += parseInt(jQuery(el).css('margin-top'));
-			var y = Math.floor(top) + height;
-			var x = Math.floor(left);
-			jQuery(cl).css('top',y+"px");
-			jQuery(cl).css('left',x+"px");
-		}
-	</script>
 	<div class="wrap">
 		<h2>EsAudioPlayer configuration</h2>
 
 		<form method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>">
-		<?php wp_nonce_field('update-options');  ?>
-		<?php $basecolor_play = get_option("esaudioplayer_basecolor_play", "#ffcc99"); ?>
-		<?php $symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#cc0066"); ?>
-		<?php $basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#ffcc99"); ?>
-		<?php $symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#cc0066"); ?>
-		<?php $basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#ffcc99"); ?>
-		<?php $symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#cc0066"); ?>
-		<?php $slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#cc0066"); ?>
-		<?php $slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#cc0066"); ?>
-		<?php $shadowcolor = get_option("esaudioplayer_shadowcolor", "#888888"); ?>
-		<?php $shadowsize = get_option("esaudioplayer_shadowsize", "0.1"); ?>
+
+		<?php
+		wp_nonce_field('update-options');  
+		$basecolor_play = get_option("esaudioplayer_basecolor_play", "#ffcc99"); 
+		$symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#cc0066"); 
+		$basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#ffcc99"); 
+		$symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#cc0066"); 
+		$basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#ffcc99"); 
+		$symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#cc0066"); 
+		$slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#cc0066"); 
+		$slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#cc0066"); 
+		$shadowcolor = get_option("esaudioplayer_shadowcolor", "#888888"); 
+		$shadowsize = get_option("esaudioplayer_shadowsize", "0.1"); 
+
+		EsAudioPlayer_read_accessibility_setting(); 
+		$acc_text_enable = $esplayer_acc_text_enable; 
+		$acc_msg_download = $esplayer_acc_msg_download; 
+		$acc_scr_enable = $esplayer_acc_scr_enable; 
+		$acc_scr_basic_btns = $esplayer_acc_scr_basic_btns; 
+		$acc_scr_msg_play_btn = $esplayer_acc_scr_msg_play_btn; 
+		$acc_scr_msg_stop_btn = $esplayer_acc_scr_msg_stop_btn; 
+		$acc_scr_msg_playstop_btn = $esplayer_acc_scr_msg_playstop_btn; 
+		$acc_scr_msg_playpause_btn = $esplayer_acc_scr_msg_playpause_btn;
+		$acc_scr_fw_enable = $esplayer_acc_scr_fw_enable;
+		$acc_scr_fw_amount = $esplayer_acc_scr_fw_amount;
+		$acc_scr_fw_unit = $esplayer_acc_scr_fw_unit;
+		$acc_scr_fw_msg = $esplayer_acc_scr_fw_msg;
+		$acc_scr_rew_enable = $esplayer_acc_scr_rew_enable;
+		$acc_scr_rew_amount = $esplayer_acc_scr_rew_amount;
+		$acc_scr_rew_unit = $esplayer_acc_scr_rew_unit;
+		$acc_scr_rew_msg = $esplayer_acc_scr_rew_msg;
+		$acc_scr_ffw_enable = $esplayer_acc_scr_ffw_enable;
+		$acc_scr_ffw_amount = $esplayer_acc_scr_ffw_amount;
+		$acc_scr_ffw_unit = $esplayer_acc_scr_ffw_unit;
+		$acc_scr_ffw_msg = $esplayer_acc_scr_ffw_msg;
+		$acc_scr_frew_enable = $esplayer_acc_scr_frew_enable;
+		$acc_scr_frew_amount = $esplayer_acc_scr_frew_amount;
+		$acc_scr_frew_unit = $esplayer_acc_scr_frew_unit;
+		$acc_scr_frew_msg = $esplayer_acc_scr_frew_msg;
+ 		?>
+
+		<h3>Color Settings</h3>
+
 		<table class="form-table">
-		<tr valign="top">
-		<th scope="row">Base Color (Play) <input type="text" id="esaudioplayer_basecolor_play" name="esaudioplayer_basecolor_play" value="<?php echo $basecolor_play; ?>" /></th>
+		<tr>
+		<th scope="row" style="text-align:right;">Base Color (Play)</th>
+		<td> <input type="text" id="esaudioplayer_basecolor_play" name="esaudioplayer_basecolor_play" value="<?php echo $basecolor_play; ?>" /></td>
 		</tr>
 		<tr>
-		<th scope="row">Symbol Color (Play) <input type="text" id="esaudioplayer_symbolcolor_play" name="esaudioplayer_symbolcolor_play" value="<?php echo $symbolcolor_play; ?>" /></th>
+		<th scope="row" style="text-align:right;">Symbol Color (Play)</th>
+		<td> <input type="text" id="esaudioplayer_symbolcolor_play" name="esaudioplayer_symbolcolor_play" value="<?php echo $symbolcolor_play; ?>" /></td>
 
 		</tr>
-		<tr valign="top">
-		<th scope="row">Base Color (Stop) <input type="text" id="esaudioplayer_basecolor_stop" name="esaudioplayer_basecolor_stop" value="<?php echo $basecolor_stop; ?>" /></th>
+		<tr>
+		<th scope="row" style="text-align:right;">Base Color (Stop)</th>
+		<td> <input type="text" id="esaudioplayer_basecolor_stop" name="esaudioplayer_basecolor_stop" value="<?php echo $basecolor_stop; ?>" /></td>
 		</tr>
 		<tr>
-		<th scope="row">Symbol Color (Stop) <input type="text" id="esaudioplayer_symbolcolor_stop" name="esaudioplayer_symbolcolor_stop" value="<?php echo $symbolcolor_stop; ?>" /></th>
-		</tr>
-
-		</tr>
-		<tr valign="top">
-		<th scope="row">Base Color (Pause) <input type="text" id="esaudioplayer_basecolor_pause" name="esaudioplayer_basecolor_pause" value="<?php echo $basecolor_pause; ?>" /></th>
-		</tr>
-		<tr>
-		<th scope="row">Symbol Color (Pause) <input type="text" id="esaudioplayer_symbolcolor_pause" name="esaudioplayer_symbolcolor_pause" value="<?php echo $symbolcolor_pause; ?>" /></th>
+		<th scope="row" style="text-align:right;">Symbol Color (Stop)</th>
+		<td> <input type="text" id="esaudioplayer_symbolcolor_stop" name="esaudioplayer_symbolcolor_stop" value="<?php echo $symbolcolor_stop; ?>" /></td>
 		</tr>
 
 		</tr>
-		<tr valign="top">
-		<th scope="row">Slider Color (line) <input type="text" id="esaudioplayer_slidercolor_line" name="esaudioplayer_slidercolor_line" value="<?php echo $slidercolor_line; ?>" /></th>
+		<tr>
+		<th scope="row" style="text-align:right;">Base Color (Pause)</th>
+		<td> <input type="text" id="esaudioplayer_basecolor_pause" name="esaudioplayer_basecolor_pause" value="<?php echo $basecolor_pause; ?>" /></td>
 		</tr>
 		<tr>
-		<th scope="row">Slider Color (knob) <input type="text" id="esaudioplayer_slidercolor_knob" name="esaudioplayer_slidercolor_knob" value="<?php echo $slidercolor_knob; ?>" /></th>
+		<th scope="row" style="text-align:right;">Symbol Color (Pause)</th>
+		<td> <input type="text" id="esaudioplayer_symbolcolor_pause" name="esaudioplayer_symbolcolor_pause" value="<?php echo $symbolcolor_pause; ?>" /></td>
 		</tr>
 
 		</tr>
-		<tr valign="top">
-		<th scope="row">Shadow Size<input type="text" name="esaudioplayer_shadowsize" value="<?php echo $shadowsize; ?>" /></th>
+		<tr>
+		<th scope="row" style="text-align:right;">Slider Color (line)</th>
+		<td> <input type="text" id="esaudioplayer_slidercolor_line" name="esaudioplayer_slidercolor_line" value="<?php echo $slidercolor_line; ?>" /></td>
 		</tr>
 		<tr>
-		<th scope="row">Shadow Color<input type="text" id="esaudioplayer_shadowcolor" name="esaudioplayer_shadowcolor" value="<?php echo $shadowcolor; ?>" /></th>
+		<th scope="row" style="text-align:right;">Slider Color (knob)</th>
+		<td> <input type="text" id="esaudioplayer_slidercolor_knob" name="esaudioplayer_slidercolor_knob" value="<?php echo $slidercolor_knob; ?>" /></td>
+		</tr>
+
+		</tr>
+		<tr>
+		<th scope="row" style="text-align:right;">Shadow Size</th>
+		<td><input type="text" name="esaudioplayer_shadowsize" value="<?php echo $shadowsize; ?>" /></td>
+		</tr>
+		<tr>
+		<th scope="row" style="text-align:right;">Shadow Color</th>
+		<td><input type="text" id="esaudioplayer_shadowcolor" name="esaudioplayer_shadowcolor" value="<?php echo $shadowcolor; ?>" /></td>
+		</tr>
+		</table>
+
+		<h3>Accessibility Settings</h3>
+
+		<h4>For Text-based Browsers</h4>
+
+		<table class="form-table">
+		<tr>
+		<th scope="row" style="text-align:right;">Status</th>
+		<td>
+		<input type="radio" name="esaudioplayer_acc_text_enable" value="1" <?php echo $acc_text_enable=="1"?"checked ":""; ?>/>Enabled<br/>
+		<input type="radio" name="esaudioplayer_acc_text_enable" value="0" <?php echo $acc_text_enable=="0"?"checked ":""; ?>/>Disabled
+		</td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Download link speech</th>
+		<td><input type="text" id="esaudioplayer_acc_msg_download" name="esaudioplayer_acc_msg_download" value="<?php echo $acc_msg_download; ?>" /></td>
+		</tr>		</table>
+
+
+
+
+		<h4>For Screen Readers</h4>		
+
+		<table class="form-table">
+		<tr>
+		<th scope="row" style="text-align:right;">Status</th>
+		<td>
+		<input type="radio" name="esaudioplayer_acc_scr_enable" value="1" <?php echo $acc_scr_enable=="1"?"checked":""; ?>>Enabled<br/>
+		<input type="radio" name="esaudioplayer_acc_scr_enable" value="0" <?php echo $acc_scr_enable=="0"?"checked":""; ?>>Disabled
+		</td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Basic buttons</th>
+		<td>
+		<input type="radio" name="esaudioplayer_acc_scr_basic_btns" value="playstop" <?php echo $acc_scr_basic_btns=="playstop"?"checked":""; ?>>[Play/Stop]<br/>
+		<input type="radio" name="esaudioplayer_acc_scr_basic_btns" value="play+stop" <?php echo $acc_scr_basic_btns=="play+stop"?"checked":""; ?>>[Play] + [Stop]<br/>
+		<input type="radio" name="esaudioplayer_acc_scr_basic_btns" value="playpause+stop" <?php echo $acc_scr_basic_btns=="playpause+stop"?"checked":""; ?>>[Play/Pause] + [Stop]<br/>
+		</td>
+		</tr>
+		<tr>
+		<th scope="row" style="text-align:right;">Play button speech</th>
+		<td><input type="text" name="esaudioplayer_acc_scr_msg_play_btn" value="<?php echo $acc_scr_msg_play_btn; ?>" /></td>
+		</tr>		<tr>
+		<th scope="row" style="text-align:right;">Stop button speech</th>
+		<td><input type="text" name="esaudioplayer_acc_scr_msg_stop_btn" value="<?php echo $acc_scr_msg_stop_btn; ?>" /></td>
+		</tr>		<tr>
+		<th scope="row" style="text-align:right;">Play/Stop button speech</th>
+		<td><input type="text" name="esaudioplayer_acc_scr_msg_playstop_btn" value="<?php echo $acc_scr_msg_playstop_btn; ?>" /></td>
+		</tr>		<tr>
+		<th scope="row" style="text-align:right;">Play/Pause button speech</th>
+		<td><input type="text" name="esaudioplayer_acc_scr_msg_playpause_btn" value="<?php echo $acc_scr_msg_playpause_btn; ?>" /></td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Forward Button</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_fw_enable" value="1" <?php echo $acc_scr_fw_enable=="1"?"checked":""; ?> />Enable<br/>
+		Amount <input type="text" name="esaudioplayer_acc_scr_fw_amount" value="<?php echo $acc_scr_fw_amount; ?>" />
+		<input type="radio" name="esaudioplayer_acc_scr_fw_unit" value="sec" <?php echo $acc_scr_fw_unit=="sec"?"checked":""; ?>>sec.
+		<input type="radio" name="esaudioplayer_acc_scr_fw_unit" value="pct" <?php echo $acc_scr_fw_unit=="pct"?"checked":""; ?>>%<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_fw_msg" value="<?php echo $acc_scr_fw_msg; ?>" />
+		</td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Rewind Button</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_rew_enable" value="1" <?php echo $acc_scr_rew_enable=="1"?"checked":""; ?> />Enable<br/>
+		Amount <input type="text" name="esaudioplayer_acc_scr_rew_amount" value="<?php echo $acc_scr_rew_amount; ?>" />
+		<input type="radio" name="esaudioplayer_acc_scr_rew_unit" value="sec" <?php echo $acc_scr_rew_unit=="sec"?"checked":""; ?>>sec.
+		<input type="radio" name="esaudioplayer_acc_scr_rew_unit" value="pct" <?php echo $acc_scr_rew_unit=="pct"?"checked":""; ?>>%<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_rew_msg" value="<?php echo $acc_scr_rew_msg; ?>" />
+		</td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Fast Forward Button</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_ffw_enable" value="1" <?php echo $acc_scr_ffw_enable=="1"?"checked":""; ?> />Enable<br/>
+		Amount <input type="text" name="esaudioplayer_acc_scr_ffw_amount" value="<?php echo $acc_scr_ffw_amount; ?>" />
+		<input type="radio" name="esaudioplayer_acc_scr_ffw_unit" value="sec" <?php echo $acc_scr_ffw_unit=="sec"?"checked":""; ?>>sec.
+		<input type="radio" name="esaudioplayer_acc_scr_ffw_unit" value="pct" <?php echo $acc_scr_ffw_unit=="pct"?"checked":""; ?>>%<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_ffw_msg" value="<?php echo $acc_scr_ffw_msg; ?>" />
+		</td>
+		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Fast Rewind Button</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_frew_enable" value="1" <?php echo $acc_scr_frew_enable=="1"?"checked":""; ?> />Enable<br/>
+		Amount <input type="text" name="esaudioplayer_acc_scr_frew_amount" value="<?php echo $acc_scr_frew_amount; ?>" />
+		<input type="radio" name="esaudioplayer_acc_scr_frew_unit" value="sec" <?php echo $acc_scr_frew_unit=="sec"?"checked":""; ?>>sec.
+		<input type="radio" name="esaudioplayer_acc_scr_frew_unit" value="pct" <?php echo $acc_scr_frew_unit=="pct"?"checked":""; ?>>%<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_frew_msg" value="<?php echo $acc_scr_frew_msg; ?>" />
+		</td>
 		</tr>
 
 
 		</table>
+
+
 		<input type="hidden" name="action" value="update" />
 		<input type="hidden" name="page_options" value="esaudioplayer_basecolor_play,esaudioplayer_symbolcolor_play,esaudioplayer_basecolor_stop,esaudioplayer_symbolcolor_stop" />
 		<p class="submit">

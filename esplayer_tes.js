@@ -127,6 +127,10 @@ EsAudioPlayer.prototype.init = function()
 		jQuery('#'+this.id).bind(this.isSmartphone ? 'touchstart':'mousedown' ,function(event){
 			that.onClick(event);
 		});
+		//jQuery('#'+this.id).attr("tabindex","0");
+		//jQuery('#'+this.id).keypress(function(event){
+		//	alert(event.which);
+		//});
 	}
 
 	function callMethod_getSetting() {that.getSetting();}
@@ -388,7 +392,9 @@ EsAudioPlayer.prototype.initSound = function()
 
 
 
-
+// function name: onClick
+// description : process click/touch event
+// argument : ev (event)
 EsAudioPlayer.prototype.onClick = function(ev)
 {
 	this.preventDrawing = false;
@@ -434,6 +440,9 @@ EsAudioPlayer.prototype.getEv = function( event )
 };
 
 
+// function name: onMouseMove
+// description : process mouse move event (moving slider)
+// argument : ev (event)
 EsAudioPlayer.prototype.onMouseMove = function (ev)
 {
 	this.slider_x = this.getEv(ev).pageX - this.slider_mouse_ofs_x - this.ofs.left;
@@ -442,7 +451,10 @@ EsAudioPlayer.prototype.onMouseMove = function (ev)
 	this.preventDrawing = false;
 	this.anim();
 }
-	
+
+// function name: onMouseUp
+// description : process mouse/touchpad release event
+// argument : ev (event)
 EsAudioPlayer.prototype.onMouseUp = function (ev)
 {
 	this.mySound[this.nowPlaying].setPosition(this.calc_pos(this.slider_x));
@@ -650,22 +662,19 @@ EsAudioPlayer.prototype.anim = function()
 
 // function name: func_play_stop
 // description : toggle play/stop
-// argument : void
+// argument : accessibility option
+//	"play/stop":
+//	"play/pause":
+//	"play":
 EsAudioPlayer.prototype.func_play_stop = function()
 {
+	var acc="";
+	if (arguments.length) acc=arguments[0];
+
 	if (!this.created) return;
 
 	if (!this.play) {
-		for (i=0; i<Array_EsAudioPlayer.length; i++) {
-			if (Array_EsAudioPlayer[i].id != this.id) {
-				if (Array_EsAudioPlayer[i].play) {
-					Array_EsAudioPlayer[i].func_stop();
-					if (!!Array_EsAudioPlayer[i].tt_obj) {
-						Array_EsAudioPlayer[i].tt_obj.stop_slideshow();
-					}
-				}
-			}
-		}
+		this.func_stop_all_the_other_players();
 	}
 
 	if (this.pause) {
@@ -682,10 +691,10 @@ EsAudioPlayer.prototype.func_play_stop = function()
 		esp_playing_no ++;
 		this.flgInitializing_beforePlaying = true;
 	} else {
-		if (this.slider_length > 0) {	//pause
+		if ((this.slider_length > 0 && acc!="play/stop") || acc=="play/pause") {	//pause
 			this.mySound[this.nowPlaying].pause();
 			this.pause=true;
-		} else {
+		} else if (acc != "play") {
 			this.func_stop();
 			esp_playing_no --;
 		}
@@ -693,8 +702,88 @@ EsAudioPlayer.prototype.func_play_stop = function()
 	this.anim();
 }
 
+// function name: func_stop_all_the_other_players
+// description : stop all the other players
+// argument : void
+EsAudioPlayer.prototype.func_stop_all_the_other_players = function()
+{
+	for (i=0; i<Array_EsAudioPlayer.length; i++) {
+		if (Array_EsAudioPlayer[i].id != this.id) {
+			if (Array_EsAudioPlayer[i].play) {
+				Array_EsAudioPlayer[i].func_stop();
+				if (!!Array_EsAudioPlayer[i].tt_obj) {
+					Array_EsAudioPlayer[i].tt_obj.stop_slideshow();
+				}
+			}
+		}
+	}
+}
+
+// function name: func_acc_play
+// description : play (accessible button)
+// argument : void
+EsAudioPlayer.prototype.func_acc_play = function()
+{
+	if (!this.play) {
+		this.preventDrawing = false
+		this.func_play_stop();
+	}
+}
+
+// function name: func_acc_stop
+// description : stop (accessible button)
+// argument : void
+EsAudioPlayer.prototype.func_acc_stop = function()
+{
+	this.func_stop_all_the_other_players();
+	this.func_stop();
+}
+
+// function name: func_acc_play_stop
+// description : toggle play/stop (accessible button)
+// argument : void
+EsAudioPlayer.prototype.func_acc_play_stop = function()
+{
+	this.preventDrawing = false
+	this.func_play_stop("play/stop");
+}
+
+// function name: func_acc_play_pause
+// description : toggle play/pause (accessible button)
+// argument : void
+EsAudioPlayer.prototype.func_acc_play_pause = function()
+{
+	this.preventDrawing = false
+	this.func_play_stop("play/pause");
+}
+
+// function name: func_acc_seek
+// description : seek (accessible button)
+// argument : amount: seek amount
+//            unit : unit of amount ('sec':second 'pct':percent)
+EsAudioPlayer.prototype.func_acc_seek = function(amount, unit)
+{
+	var ms = this.mySound[this.nowPlaying];
+	var est_dur = (this.duration>0) ? this.duration : ms.durationEstimate;
+	var duration = (ms.bytesLoaded!=ms.bytesTotal) ? est_dur : ms.duration;
+	var cur = ms.position;
+	var newpos = 0;
+
+	if (unit=="pct") {
+		newpos = cur + amount*0.01 * duration;
+	} else if (unit == "sec") {
+		newpos = cur + amount * 1000;
+	} 
+	if (newpos < 0) newpos=0;
+	if (newpos > duration) return;
+	ms.setPosition(newpos);
+	this.preventDrawing = false;
+	this.anim();
+}
+
+
 // function name: func_stop
-// description : toggle play/stop
+// description : stop
 // argument : void
 EsAudioPlayer.prototype.func_stop = function()
 {
