@@ -28,8 +28,8 @@ I tested this plugin with IE8,Chrome,Firefox,Opera,Safari(WindowsXP), IE9(Window
 
 This audio player has accessibility features. 
 
-* Text browser user can download audio file. 
-* Screen reader user can manipulate the player by selecting play button, stop button, etc. 
+* Text browser users can download audio file. 
+* Screen reader users can manipulate the player by selecting play button, stop button, etc. 
 
 You can enable or disable these feature in the admin page. I tested them with Microsoft Narrator, JAWS(demo version), Focus Talk(demo version) , ALTAIR and NVDA.
 
