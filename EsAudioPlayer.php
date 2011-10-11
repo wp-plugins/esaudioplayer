@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.3.0
+Version: 1.3.1
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -189,7 +189,9 @@ function esplayer_lex(&$content,&$lex_pos, &$token)
 function EsAudioPlayer_filter_0($raw_text) 
 {
 	$ret = mb_ereg_replace("\]<br />[\n]\[esplayer", "] [esplayer", $raw_text);
-	return mb_ereg_replace("[\n]*\[esplayer", "[esplayer", $ret);
+	$ret = mb_ereg_replace("[\n]*\[esplayer", "[esplayer", $ret);
+	$ret = mb_ereg_replace("\]\[esplayer", "] [esplayer", $ret);
+	return $ret;
 }
 add_filter('the_content',  "EsAudioPlayer_filter_0", 10) ;
 
@@ -297,6 +299,13 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$esplayer_mode="0";
 	$loop="false";
 	$duration="";
+	$acc_basic_btns="";
+	$acc_fwd_btn="";
+	$acc_rwd_btn="";
+	$acc_ffwd_btn="";
+	$acc_frwd_btn="";
+	$acc_scr_enable="";
+
 
 	extract($atts);
 	if (substr($vp,0,1)=="-") {
@@ -316,6 +325,12 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$id = "esplayer_" . (string)($player_number);
 	$js_var='esplayervar' . (string)($player_number);
 
+	if ($acc_basic_btns=="") $acc_basic_btns = $esplayer_acc_scr_basic_btns; else $acc_scr_enable="1";
+	if ($acc_fwd_btn=="") $acc_fwd_btn = $esplayer_acc_scr_fw_enable;
+	if ($acc_rew_btn=="") $acc_fwd_btn = $esplayer_acc_scr_rew_enable;
+	if ($acc_ffwd_btn=="") $acc_ffwd_btn = $esplayer_acc_scr_ffw_enable;
+	if ($acc_frew_btn=="") $acc_ffwd_btn = $esplayer_acc_scr_frew_enable;
+
 	if ($img_id == "" && $timetable_id == "") {
 		$esplayer_mode="simple";
 		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\" style=\"cursor:pointer;\"></canvas></div>";
@@ -330,30 +345,30 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	if ($esplayer_acc_text_enable == "1") {
 		$ret .= "<div style=\"display:none;\"><a href=\"" .$url. "\">" . $esplayer_acc_msg_download . "</a></div>";
 	}
-	if ($esplayer_acc_scr_enable == "1") {
+	if ($acc_scr_enable == "1") {
 		$ret .= "<div style=\"position:absolute;left:-3000px;\">";
-		if ($esplayer_acc_scr_basic_btns == "playstop") {
+		if ($acc_basic_btns == "playstop") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playstop_btn . "' onclick=\"".$js_var.".func_acc_play_stop();return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_basic_btns == "play+stop") {
+		if ($acc_basic_btns == "play+stop") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_play_btn . "' onclick=\"".$js_var.".func_acc_play();return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_basic_btns == "playpause+stop") {
+		if ($acc_basic_btns == "playpause+stop") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playpause_btn . "' onclick=\"".$js_var.".func_acc_play_pause();return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_basic_btns == "play+stop" || $esplayer_acc_scr_basic_btns == "playpause+stop") {
+		if ($acc_basic_btns == "play+stop" || $acc_basic_btns == "playpause+stop") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_stop_btn . "' onclick=\"".$js_var.".func_acc_stop();return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_fw_enable=="1") {
+		if ($acc_fwd_btn=="1") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_fw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_fw_amount.",'".$esplayer_acc_scr_fw_unit."');return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_rew_enable=="1") {
+		if ($acc_rew_btn=="1") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_rew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_rew_amount.",'".$esplayer_acc_scr_rew_unit."');return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_ffw_enable=="1") {
+		if ($acc_ffwd_btn=="1") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_ffw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_ffw_amount.",'".$esplayer_acc_scr_ffw_unit."');return -1;\"/>";
 		}
-		if ($esplayer_acc_scr_frew_enable=="1") {
+		if ($acc_frew_btn=="1") {
 			$ret .= "<input type='button' title='" . $esplayer_acc_scr_frew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_frew_amount.",'".$esplayer_acc_scr_frew_unit."');return -1;\"/>";
 		}
 
