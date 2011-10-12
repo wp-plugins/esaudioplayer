@@ -329,9 +329,9 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	if ($acc_basic_btns=="") $acc_basic_btns = $esplayer_acc_scr_basic_btns; else $acc_scr_enable="1";
 	if ($acc_fwd_btn=="") $acc_fwd_btn = $esplayer_acc_scr_fw_enable;
-	if ($acc_rew_btn=="") $acc_fwd_btn = $esplayer_acc_scr_rew_enable;
+	if ($acc_rew_btn=="") $acc_rew_btn = $esplayer_acc_scr_rew_enable;
 	if ($acc_ffwd_btn=="") $acc_ffwd_btn = $esplayer_acc_scr_ffw_enable;
-	if ($acc_frew_btn=="") $acc_ffwd_btn = $esplayer_acc_scr_frew_enable;
+	if ($acc_frew_btn=="") $acc_frew_btn = $esplayer_acc_scr_frew_enable;
 
 	if ($img_id == "" && $timetable_id == "") {
 		$esplayer_mode="simple";
