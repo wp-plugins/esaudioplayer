@@ -52,6 +52,9 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 
 == Changelog ==
 
+= 1.3.2 =
+* Solved the problem that accessible buttons are not created when the accessibility function is enabled.
+
 = 1.3.1 =
 * Solved the problem that sometimes a shortcord is not interpreted when there are only whitespaces between the shortcord and another one.
 

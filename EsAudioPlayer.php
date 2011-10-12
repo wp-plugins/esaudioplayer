@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.3.1
+Version: 1.3.2
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -324,6 +324,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	$id = "esplayer_" . (string)($player_number);
 	$js_var='esplayervar' . (string)($player_number);
+
+	$acc_scr_enable = $esplayer_acc_scr_enable;
 
 	if ($acc_basic_btns=="") $acc_basic_btns = $esplayer_acc_scr_basic_btns; else $acc_scr_enable="1";
 	if ($acc_fwd_btn=="") $acc_fwd_btn = $esplayer_acc_scr_fw_enable;
