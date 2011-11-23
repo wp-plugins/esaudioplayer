@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: aueda
 Donate link: http://tempspace.net/plugins/
-Tags: audio,player,cross-browser,cross-platform,accessibility,accessible,cross,browser,platform,slideshow,mp3,mp3 player,audio player
+Tags: audio,player,cross-browser,cross-platform,accessibility,accessible,cross,browser,platform,slideshow,mp3,mp3 player,audio player,soundmanager2
 Requires at least: 3.2.0
 Tested up to: 3.2.1
 Stable tag: 4.3
@@ -51,6 +51,11 @@ the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1
 2. This is the second screen shot
 
 == Changelog ==
+
+= 1.4.0 =
+* You can put a player in a sidebar text widget.
+* Setting page moved from plugin tab to setting tab.
+* Solved the problem that pleayer buttons are displayed with wrong colors.
 
 = 1.3.2 =
 * Solved the problem that accessible buttons are not created when the accessibility function is enabled.

@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.3.2
+Version: 1.4.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -434,7 +434,8 @@ function EsAudioPlayer_filter_2($raw_text) {
 	return $ret;
 }
 
-add_filter('the_content',  "EsAudioPlayer_filter_2", 99) ;
+add_filter('the_content',  "EsAudioPlayer_filter_2", 98) ;
+add_filter('widget_text',  "EsAudioPlayer_filter_2", 99) ;
 
 
 include 'EsAudioPlayer_tt.php';
@@ -456,6 +457,18 @@ function EsAudioPlayer_title_filter( $title ) {
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";
 	echo "<script type=\"text/javascript\">\nvar esp_tt_data_encoded='';\nvar esp_tt_data; </script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";
+	echo	"<script type=\"text/javascript\">\n".
+		"var esplayer_basecolor_play = '".get_option("esaudioplayer_basecolor_play", "#dddddd")."';\n".
+		"var esplayer_symbolcolor_play = '".get_option("esaudioplayer_symbolcolor_play", "#666666")."';\n".
+		"var esplayer_basecolor_stop = '".get_option("esaudioplayer_basecolor_stop", "#dddddd")."';\n".
+		"var esplayer_symbolcolor_stop = '".get_option("esaudioplayer_symbolcolor_stop", "#666666")."';\n".
+		"var esplayer_basecolor_pause = '".get_option("esaudioplayer_basecolor_pause", "#dddddd")."';\n".
+		"var esplayer_symbolcolor_pause = '".get_option("esaudioplayer_symbolcolor_pause", "#666666")."';\n".
+		"var esplayer_color_slider_line = '".get_option("esaudioplayer_slidercolor_line", "#666666")."';\n".
+		"var esplayer_color_slider_knob = '".get_option("esaudioplayer_slidercolor_knob", "#666666")."';\n".
+		"var esplayer_shadowsize = " .get_option("esaudioplayer_shadowsize", "0.1")  .";\n".
+		"var esplayer_shadowcolor = '".get_option("esaudioplayer_shadowcolor", "#888888") ."';\n".
+		"</script>\n";
 } 
 
 
@@ -464,7 +477,7 @@ add_action('admin_menu', 'esaudioplayer_plugin_menu');
 function esaudioplayer_plugin_menu()
 {
 	/*  設定画面の追加  */
-	add_submenu_page('plugins.php', 'EsAudioPlayer Configuration', 'EsAudioPlayer', 'manage_options', 'esaudioplayer-submenu-handle', 'esaudioplayer_magic_function'); 
+	add_submenu_page('options-general.php', 'EsAudioPlayer Configuration', 'EsAudioPlayer', 'manage_options', 'esaudioplayer-submenu-handle', 'esaudioplayer_magic_function'); 
 }
 
 $esaudioplayer_col_ar[0] = '#esaudioplayer_basecolor_play';
@@ -507,7 +520,7 @@ function esaudioplayer_farbtastic_prepare($ar)
 		"	</script>\n";
 }
 
-/*  設定画面出力  */
+/*  設定画面出劁E */
 function esaudioplayer_magic_function()
 {
 	global $esplayer_acc_text_enable;
@@ -535,7 +548,7 @@ function esaudioplayer_magic_function()
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
 
-	/*  Save Changeボタン押下でコールされた場合、$_POSTに格納された設定情報を保存  */
+	/*  Save Changeボタン押下でコールされた場合、E_POSTに格納された設定情報を保孁E */
 	if ( isset($_POST['updateEsAudioPlayerSetting'] ) ) {
 		echo '<div id="message" class="updated fade"><p><strong>Options saved.</strong></p></div>';
 		update_option('esaudioplayer_basecolor_play', $_POST['esaudioplayer_basecolor_play']);
@@ -602,14 +615,14 @@ function esaudioplayer_magic_function()
 
 		<?php
 		wp_nonce_field('update-options');  
-		$basecolor_play = get_option("esaudioplayer_basecolor_play", "#ffcc99"); 
-		$symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#cc0066"); 
-		$basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#ffcc99"); 
-		$symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#cc0066"); 
-		$basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#ffcc99"); 
-		$symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#cc0066"); 
-		$slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#cc0066"); 
-		$slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#cc0066"); 
+		$basecolor_play = get_option("esaudioplayer_basecolor_play", "#dddddd"); 
+		$symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#666666"); 
+		$basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#dddddd"); 
+		$symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#666666"); 
+		$basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#dddddd"); 
+		$symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#666666"); 
+		$slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#666666"); 
+		$slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#666666"); 
 		$shadowcolor = get_option("esaudioplayer_shadowcolor", "#888888"); 
 		$shadowsize = get_option("esaudioplayer_shadowsize", "0.1"); 
 

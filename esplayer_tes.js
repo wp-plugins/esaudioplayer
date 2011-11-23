@@ -17,22 +17,7 @@ soundManager.onready(function() {
 	soundManager_ready = true;
 });
 
-getColor();
-
-// default values
-var esplayer_basecolor_play = '#dddddd';
-var esplayer_symbolcolor_play = '#888888';
-var esplayer_basecolor_stop = '#dddddd';
-var esplayer_symbolcolor_stop = '#888888';
-var esplayer_basecolor_pause = '#dddddd';
-var esplayer_symbolcolor_pause = '#888888';
-var esplayer_color_slider_line = '#dddddd';
-var esplayer_color_slider_knob = '#888888';
-var esplayer_shadowsize = 0.1;
-var esplayer_shadowcolor = '#888888';
-var esplayer_color_loaded = false;
 var esplayer_jquery_prepared = false;
-
 
 jQuery(document).ready(function(){
 	esplayer_jquery_prepared = true
@@ -283,47 +268,12 @@ EsAudioPlayer.prototype.initCanvas = function()
 
 
 
-// function name: getColor
-// description : get color from plugin setting parameter
-// argument : void
-function getColor()
-{
-	jQuery.ajax({
-		type: "GET",
-		url: esAudioPlayer_plugin_URL + "/getcolor.php",
-		dataType: "json",
-		data: "",
-		success: function(data) {
-			esplayer_basecolor_play = data.basecolor_play;
-			esplayer_symbolcolor_play = data.symbolcolor_play;
-			esplayer_basecolor_stop = data.basecolor_stop;
-			esplayer_symbolcolor_stop = data.symbolcolor_stop;
-			esplayer_basecolor_pause = data.basecolor_pause;
-			esplayer_symbolcolor_pause = data.symbolcolor_pause;
-			esplayer_color_slider_line = data.color_slider_line;
-			esplayer_color_slider_knob = data.color_slider_knob;
-			esplayer_shadowsize = data.shadowsize;
-			esplayer_shadowcolor = data.shadowcolor;
-//alert(esplayer_color_slider_line);
-			esplayer_color_loaded = true;
-		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			if (esplayer_debug) {
-				alert(textStatus);
-				alert("XMLHttpRequest: "+XMLHttpRequest+"\n"+"textStatus:"+textStatus+"\n"+"errorThrown: "+errorThrown);
-			}
-			esplayer_color_loaded = true;
-		}
-	});
-}
-
 
 // function name: getSetting
 // description : set default setting to the player object.
 // argument : void
 EsAudioPlayer.prototype.getSetting = function() 
 {
-	if (esplayer_color_loaded == false) return;
 	if (this.basecolor_play == '') this.basecolor_play = esplayer_basecolor_play;
 	if (this.symbolcolor_play == '') this.symbolcolor_play = esplayer_symbolcolor_play;
 	if (this.basecolor_stop == '') this.basecolor_stop = esplayer_basecolor_stop;
