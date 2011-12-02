@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.4.0
+Version: 1.5.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -22,7 +22,23 @@ add_action('init', 'esplayer_init');
 $player_number = 1;
 $esAudioPlayer_plugin_URL = get_option( 'siteurl' ) . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
 
-
+function esplayer_is_mobile(){//http://stackoverflow.com/questions/5122566/simple-smart-phone-detection
+        $user_agent = $_SERVER['HTTP_USER_AGENT']; // get the user agent value - this should be cleaned to ensure no nefarious input gets executed
+        $accept     = $_SERVER['HTTP_ACCEPT']; // get the content accept value - this should be cleaned to ensure no nefarious input gets executed
+        return false
+            || (preg_match('/ipad/i',$user_agent))
+            || (preg_match('/ipod/i',$user_agent)||preg_match('/iphone/i',$user_agent))
+            || (preg_match('/android/i',$user_agent))
+            || (preg_match('/opera mini/i',$user_agent))
+            || (preg_match('/blackberry/i',$user_agent))
+            || (preg_match('/(pre\/|palm os|palm|hiptop|avantgo|plucker|xiino|blazer|elaine)/i',$user_agent))
+            || (preg_match('/(iris|3g_t|windows ce|opera mobi|windows ce; smartphone;|windows ce; iemobile)/i',$user_agent))
+            || (preg_match('/(mini 9.5|vx1000|lge |m800|e860|u940|ux840|compal|wireless| mobi|ahong|lg380|lgku|lgu900|lg210|lg47|lg920|lg840|lg370|sam-r|mg50|s55|g83|t66|vx400|mk99|d615|d763|el370|sl900|mp500|samu3|samu4|vx10|xda_|samu5|samu6|samu7|samu9|a615|b832|m881|s920|n210|s700|c-810|_h797|mob-x|sk16d|848b|mowser|s580|r800|471x|v120|rim8|c500foma:|160x|x160|480x|x640|t503|w839|i250|sprint|w398samr810|m5252|c7100|mt126|x225|s5330|s820|htil-g1|fly v71|s302|-x113|novarra|k610i|-three|8325rc|8352rc|sanyo|vx54|c888|nx250|n120|mtk |c5588|s710|t880|c5005|i;458x|p404i|s210|c5100|teleca|s940|c500|s590|foma|samsu|vx8|vx9|a1000|_mms|myx|a700|gu1100|bc831|e300|ems100|me701|me702m-three|sd588|s800|8325rc|ac831|mw200|brew |d88|htc\/|htc_touch|355x|m50|km100|d736|p-9521|telco|sl74|ktouch|m4u\/|me702|8325rc|kddi|phone|lg |sonyericsson|samsung|240x|x320|vx10|nokia|sony cmd|motorola|up.browser|up.link|mmp|symbian|smartphone|midp|wap|vodafone|o2|pocket|kindle|mobile|psp|treo)/i',$user_agent))
+            || ((strpos($accept,'text/vnd.wap.wml')>0)||(strpos($accept,'application/vnd.wap.xhtml+xml')>0))
+            || (isset($_SERVER['HTTP_X_WAP_PROFILE'])||isset($_SERVER['HTTP_PROFILE']))
+            || (in_array(strtolower(substr($user_agent,0,4)),array('1207'=>'1207','3gso'=>'3gso','4thp'=>'4thp','501i'=>'501i','502i'=>'502i','503i'=>'503i','504i'=>'504i','505i'=>'505i','506i'=>'506i','6310'=>'6310','6590'=>'6590','770s'=>'770s','802s'=>'802s','a wa'=>'a wa','acer'=>'acer','acs-'=>'acs-','airn'=>'airn','alav'=>'alav','asus'=>'asus','attw'=>'attw','au-m'=>'au-m','aur '=>'aur ','aus '=>'aus ','abac'=>'abac','acoo'=>'acoo','aiko'=>'aiko','alco'=>'alco','alca'=>'alca','amoi'=>'amoi','anex'=>'anex','anny'=>'anny','anyw'=>'anyw','aptu'=>'aptu','arch'=>'arch','argo'=>'argo','bell'=>'bell','bird'=>'bird','bw-n'=>'bw-n','bw-u'=>'bw-u','beck'=>'beck','benq'=>'benq','bilb'=>'bilb','blac'=>'blac','c55/'=>'c55/','cdm-'=>'cdm-','chtm'=>'chtm','capi'=>'capi','cond'=>'cond','craw'=>'craw','dall'=>'dall','dbte'=>'dbte','dc-s'=>'dc-s','dica'=>'dica','ds-d'=>'ds-d','ds12'=>'ds12','dait'=>'dait','devi'=>'devi','dmob'=>'dmob','doco'=>'doco','dopo'=>'dopo','el49'=>'el49','erk0'=>'erk0','esl8'=>'esl8','ez40'=>'ez40','ez60'=>'ez60','ez70'=>'ez70','ezos'=>'ezos','ezze'=>'ezze','elai'=>'elai','emul'=>'emul','eric'=>'eric','ezwa'=>'ezwa','fake'=>'fake','fly-'=>'fly-','fly_'=>'fly_','g-mo'=>'g-mo','g1 u'=>'g1 u','g560'=>'g560','gf-5'=>'gf-5','grun'=>'grun','gene'=>'gene','go.w'=>'go.w','good'=>'good','grad'=>'grad','hcit'=>'hcit','hd-m'=>'hd-m','hd-p'=>'hd-p','hd-t'=>'hd-t','hei-'=>'hei-','hp i'=>'hp i','hpip'=>'hpip','hs-c'=>'hs-c','htc '=>'htc ','htc-'=>'htc-','htca'=>'htca','htcg'=>'htcg','htcp'=>'htcp','htcs'=>'htcs','htct'=>'htct','htc_'=>'htc_','haie'=>'haie','hita'=>'hita','huaw'=>'huaw','hutc'=>'hutc','i-20'=>'i-20','i-go'=>'i-go','i-ma'=>'i-ma','i230'=>'i230','iac'=>'iac','iac-'=>'iac-','iac/'=>'iac/','ig01'=>'ig01','im1k'=>'im1k','inno'=>'inno','iris'=>'iris','jata'=>'jata','java'=>'java','kddi'=>'kddi','kgt'=>'kgt','kgt/'=>'kgt/','kpt '=>'kpt ','kwc-'=>'kwc-','klon'=>'klon','lexi'=>'lexi','lg g'=>'lg g','lg-a'=>'lg-a','lg-b'=>'lg-b','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-f'=>'lg-f','lg-g'=>'lg-g','lg-k'=>'lg-k','lg-l'=>'lg-l','lg-m'=>'lg-m','lg-o'=>'lg-o','lg-p'=>'lg-p','lg-s'=>'lg-s','lg-t'=>'lg-t','lg-u'=>'lg-u','lg-w'=>'lg-w','lg/k'=>'lg/k','lg/l'=>'lg/l','lg/u'=>'lg/u','lg50'=>'lg50','lg54'=>'lg54','lge-'=>'lge-','lge/'=>'lge/','lynx'=>'lynx','leno'=>'leno','m1-w'=>'m1-w','m3ga'=>'m3ga','m50/'=>'m50/','maui'=>'maui','mc01'=>'mc01','mc21'=>'mc21','mcca'=>'mcca','medi'=>'medi','meri'=>'meri','mio8'=>'mio8','mioa'=>'mioa','mo01'=>'mo01','mo02'=>'mo02','mode'=>'mode','modo'=>'modo','mot '=>'mot ','mot-'=>'mot-','mt50'=>'mt50','mtp1'=>'mtp1','mtv '=>'mtv ','mate'=>'mate','maxo'=>'maxo','merc'=>'merc','mits'=>'mits','mobi'=>'mobi','motv'=>'motv','mozz'=>'mozz','n100'=>'n100','n101'=>'n101','n102'=>'n102','n202'=>'n202','n203'=>'n203','n300'=>'n300','n302'=>'n302','n500'=>'n500','n502'=>'n502','n505'=>'n505','n700'=>'n700','n701'=>'n701','n710'=>'n710','nec-'=>'nec-','nem-'=>'nem-','newg'=>'newg','neon'=>'neon','netf'=>'netf','noki'=>'noki','nzph'=>'nzph','o2 x'=>'o2 x','o2-x'=>'o2-x','opwv'=>'opwv','owg1'=>'owg1','opti'=>'opti','oran'=>'oran','p800'=>'p800','pand'=>'pand','pg-1'=>'pg-1','pg-2'=>'pg-2','pg-3'=>'pg-3','pg-6'=>'pg-6','pg-8'=>'pg-8','pg-c'=>'pg-c','pg13'=>'pg13','phil'=>'phil','pn-2'=>'pn-2','pt-g'=>'pt-g','palm'=>'palm','pana'=>'pana','pire'=>'pire','pock'=>'pock','pose'=>'pose','psio'=>'psio','qa-a'=>'qa-a','qc-2'=>'qc-2','qc-3'=>'qc-3','qc-5'=>'qc-5','qc-7'=>'qc-7','qc07'=>'qc07','qc12'=>'qc12','qc21'=>'qc21','qc32'=>'qc32','qc60'=>'qc60','qci-'=>'qci-','qwap'=>'qwap','qtek'=>'qtek','r380'=>'r380','r600'=>'r600','raks'=>'raks','rim9'=>'rim9','rove'=>'rove','s55/'=>'s55/','sage'=>'sage','sams'=>'sams','sc01'=>'sc01','sch-'=>'sch-','scp-'=>'scp-','sdk/'=>'sdk/','se47'=>'se47','sec-'=>'sec-','sec0'=>'sec0','sec1'=>'sec1','semc'=>'semc','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','sk-0'=>'sk-0','sl45'=>'sl45','slid'=>'slid','smb3'=>'smb3','smt5'=>'smt5','sp01'=>'sp01','sph-'=>'sph-','spv '=>'spv ','spv-'=>'spv-','sy01'=>'sy01','samm'=>'samm','sany'=>'sany','sava'=>'sava','scoo'=>'scoo','send'=>'send','siem'=>'siem','smar'=>'smar','smit'=>'smit','soft'=>'soft','sony'=>'sony','t-mo'=>'t-mo','t218'=>'t218','t250'=>'t250','t600'=>'t600','t610'=>'t610','t618'=>'t618','tcl-'=>'tcl-','tdg-'=>'tdg-','telm'=>'telm','tim-'=>'tim-','ts70'=>'ts70','tsm-'=>'tsm-','tsm3'=>'tsm3','tsm5'=>'tsm5','tx-9'=>'tx-9','tagt'=>'tagt','talk'=>'talk','teli'=>'teli','topl'=>'topl','hiba'=>'hiba','up.b'=>'up.b','upg1'=>'upg1','utst'=>'utst','v400'=>'v400','v750'=>'v750','veri'=>'veri','vk-v'=>'vk-v','vk40'=>'vk40','vk50'=>'vk50','vk52'=>'vk52','vk53'=>'vk53','vm40'=>'vm40','vx98'=>'vx98','virg'=>'virg','vite'=>'vite','voda'=>'voda','vulc'=>'vulc','w3c '=>'w3c ','w3c-'=>'w3c-','wapj'=>'wapj','wapp'=>'wapp','wapu'=>'wapu','wapm'=>'wapm','wig '=>'wig ','wapi'=>'wapi','wapr'=>'wapr','wapv'=>'wapv','wapy'=>'wapy','wapa'=>'wapa','waps'=>'waps','wapt'=>'wapt','winc'=>'winc','winw'=>'winw','wonu'=>'wonu','x700'=>'x700','xda2'=>'xda2','xdag'=>'xdag','yas-'=>'yas-','your'=>'your','zte-'=>'zte-','zeto'=>'zeto','acs-'=>'acs-','alav'=>'alav','alca'=>'alca','amoi'=>'amoi','aste'=>'aste','audi'=>'audi','avan'=>'avan','benq'=>'benq','bird'=>'bird','blac'=>'blac','blaz'=>'blaz','brew'=>'brew','brvw'=>'brvw','bumb'=>'bumb','ccwa'=>'ccwa','cell'=>'cell','cldc'=>'cldc','cmd-'=>'cmd-','dang'=>'dang','doco'=>'doco','eml2'=>'eml2','eric'=>'eric','fetc'=>'fetc','hipt'=>'hipt','http'=>'http','ibro'=>'ibro','idea'=>'idea','ikom'=>'ikom','inno'=>'inno','ipaq'=>'ipaq','jbro'=>'jbro','jemu'=>'jemu','java'=>'java','jigs'=>'jigs','kddi'=>'kddi','keji'=>'keji','kyoc'=>'kyoc','kyok'=>'kyok','leno'=>'leno','lg-c'=>'lg-c','lg-d'=>'lg-d','lg-g'=>'lg-g','lge-'=>'lge-','libw'=>'libw','m-cr'=>'m-cr','maui'=>'maui','maxo'=>'maxo','midp'=>'midp','mits'=>'mits','mmef'=>'mmef','mobi'=>'mobi','mot-'=>'mot-','moto'=>'moto','mwbp'=>'mwbp','mywa'=>'mywa','nec-'=>'nec-','newt'=>'newt','nok6'=>'nok6','noki'=>'noki','o2im'=>'o2im','opwv'=>'opwv','palm'=>'palm','pana'=>'pana','pant'=>'pant','pdxg'=>'pdxg','phil'=>'phil','play'=>'play','pluc'=>'pluc','port'=>'port','prox'=>'prox','qtek'=>'qtek','qwap'=>'qwap','rozo'=>'rozo','sage'=>'sage','sama'=>'sama','sams'=>'sams','sany'=>'sany','sch-'=>'sch-','sec-'=>'sec-','send'=>'send','seri'=>'seri','sgh-'=>'sgh-','shar'=>'shar','sie-'=>'sie-','siem'=>'siem','smal'=>'smal','smar'=>'smar','sony'=>'sony','sph-'=>'sph-','symb'=>'symb','t-mo'=>'t-mo','teli'=>'teli','tim-'=>'tim-','tosh'=>'tosh','treo'=>'treo','tsm-'=>'tsm-','upg1'=>'upg1','upsi'=>'upsi','vk-v'=>'vk-v','voda'=>'voda','vx52'=>'vx52','vx53'=>'vx53','vx60'=>'vx60','vx61'=>'vx61','vx70'=>'vx70','vx80'=>'vx80','vx81'=>'vx81','vx83'=>'vx83','vx85'=>'vx85','wap-'=>'wap-','wapa'=>'wapa','wapi'=>'wapi','wapp'=>'wapp','wapr'=>'wapr','webc'=>'webc','whit'=>'whit','winw'=>'winw','wmlb'=>'wmlb','xda-'=>'xda-',)))
+        ;
+}
 
 define("LEX_NULL", 100);
 define("LEX_STRING", 101);
@@ -293,6 +309,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$bgcolor="#ffffff" ;
 	$shadow_color="";
 	$shadow_size="-999";
+	$corner_size="-999";
+	$smartphone_size="-999";
 	$vp="0";
 	$border_box="";
 	$border_img="0";
@@ -305,6 +323,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$acc_ffwd_btn="";
 	$acc_frwd_btn="";
 	$acc_scr_enable="";
+	$smartphonesize=-999;
 
 
 	extract($atts);
@@ -316,8 +335,15 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	if ($width=="") $width=$height;
 	if ($height=="") $height=$width;
-	if ($height=="") {$height="27px"; $width="27px";}
-
+	if ($height=="") {$height=27; $width=27;}
+	if (esplayer_is_mobile()) {
+		if ($smartphonesize==-999) {
+			$smartphonesize = get_option("esaudioplayer_smartphonesize", "100");
+		}
+		$width *= $smartphonesize/100;
+		$height *= $smartphonesize/100;
+	}
+	
 	if (is_numeric($width)) $width = $width . "px";
 	if (is_numeric($height)) $height = $height . "px";
 	if (is_numeric($vp)) $vp = $vp . "px";
@@ -402,7 +428,11 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 		. $shadow_size
 		. ', "' 
 		. $shadow_color
-		. '", "' 
+		. '", '
+		. $corner_size
+		. ', '
+		. $smartphone_size
+		. ', "' 
 		. $border_img 
 		. '", ' 
 		. $loop
@@ -458,16 +488,18 @@ function EsAudioPlayer_title_filter( $title ) {
 	echo "<script type=\"text/javascript\">\nvar esp_tt_data_encoded='';\nvar esp_tt_data; </script>\n";
 	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";
 	echo	"<script type=\"text/javascript\">\n".
-		"var esplayer_basecolor_play = '".get_option("esaudioplayer_basecolor_play", "#dddddd")."';\n".
-		"var esplayer_symbolcolor_play = '".get_option("esaudioplayer_symbolcolor_play", "#666666")."';\n".
-		"var esplayer_basecolor_stop = '".get_option("esaudioplayer_basecolor_stop", "#dddddd")."';\n".
-		"var esplayer_symbolcolor_stop = '".get_option("esaudioplayer_symbolcolor_stop", "#666666")."';\n".
-		"var esplayer_basecolor_pause = '".get_option("esaudioplayer_basecolor_pause", "#dddddd")."';\n".
-		"var esplayer_symbolcolor_pause = '".get_option("esaudioplayer_symbolcolor_pause", "#666666")."';\n".
-		"var esplayer_color_slider_line = '".get_option("esaudioplayer_slidercolor_line", "#666666")."';\n".
-		"var esplayer_color_slider_knob = '".get_option("esaudioplayer_slidercolor_knob", "#666666")."';\n".
-		"var esplayer_shadowsize = " .get_option("esaudioplayer_shadowsize", "0.1")  .";\n".
-		"var esplayer_shadowcolor = '".get_option("esaudioplayer_shadowcolor", "#888888") ."';\n".
+		"var esplayer_basecolor_play = '".get_option("esaudioplayer_basecolor_play", "#dbdbdb")."';\n".
+		"var esplayer_symbolcolor_play = '".get_option("esaudioplayer_symbolcolor_play", "#44cc00")."';\n".
+		"var esplayer_basecolor_stop = '".get_option("esaudioplayer_basecolor_stop", "#dbdbdb")."';\n".
+		"var esplayer_symbolcolor_stop = '".get_option("esaudioplayer_symbolcolor_stop", "#ff1505")."';\n".
+		"var esplayer_basecolor_pause = '".get_option("esaudioplayer_basecolor_pause", "#dbdbdb")."';\n".
+		"var esplayer_symbolcolor_pause = '".get_option("esaudioplayer_symbolcolor_pause", "#ff7d24")."';\n".
+		"var esplayer_color_slider_line = '".get_option("esaudioplayer_slidercolor_line", "#999999")."';\n".
+		"var esplayer_color_slider_knob = '".get_option("esaudioplayer_slidercolor_knob", "#292929")."';\n".
+		"var esplayer_shadowsize = " .get_option("esaudioplayer_shadowsize", "0.25")  .";\n".
+		"var esplayer_shadowcolor = '".get_option("esaudioplayer_shadowcolor", "#a9a9a9") ."';\n".
+		"var esplayer_cornersize = " .get_option("esaudioplayer_cornersize", "18")  .";\n".
+		"var esplayer_smartphonesize = " .get_option("esaudioplayer_smartphonesize", "100")  .";\n".
 		"</script>\n";
 } 
 
@@ -520,7 +552,7 @@ function esaudioplayer_farbtastic_prepare($ar)
 		"	</script>\n";
 }
 
-/*  設定画面出劁E */
+/* setting screen */
 function esaudioplayer_magic_function()
 {
 	global $esplayer_acc_text_enable;
@@ -548,7 +580,7 @@ function esaudioplayer_magic_function()
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
 
-	/*  Save Changeボタン押下でコールされた場合、E_POSTに格納された設定情報を保孁E */
+	/*  Save Changeボタン押下でコールされた場合、E_POSTに格納された設定情報を保?E */
 	if ( isset($_POST['updateEsAudioPlayerSetting'] ) ) {
 		echo '<div id="message" class="updated fade"><p><strong>Options saved.</strong></p></div>';
 		update_option('esaudioplayer_basecolor_play', $_POST['esaudioplayer_basecolor_play']);
@@ -561,6 +593,8 @@ function esaudioplayer_magic_function()
 		update_option('esaudioplayer_slidercolor_knob', $_POST['esaudioplayer_slidercolor_knob']);
 		update_option('esaudioplayer_shadowcolor', $_POST['esaudioplayer_shadowcolor']);
 		update_option('esaudioplayer_shadowsize', $_POST['esaudioplayer_shadowsize']);
+		update_option('esaudioplayer_cornersize', $_POST['esaudioplayer_cornersize']);
+		update_option('esaudioplayer_smartphonesize', $_POST['esaudioplayer_smartphonesize']);
 
 		update_option('esaudioplayer_acc_text_enable', $_POST['esaudioplayer_acc_text_enable']);
 		update_option('esaudioplayer_acc_text_enable', $_POST['esaudioplayer_acc_text_enable']);
@@ -606,8 +640,6 @@ function esaudioplayer_magic_function()
 	<div id="colorpicker8" style="position:absolute"></div>
 	<div id="colorpicker9" style="position:absolute"></div>
 
-
-	<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 	<div class="wrap">
 		<h2>EsAudioPlayer configuration</h2>
 
@@ -615,16 +647,18 @@ function esaudioplayer_magic_function()
 
 		<?php
 		wp_nonce_field('update-options');  
-		$basecolor_play = get_option("esaudioplayer_basecolor_play", "#dddddd"); 
-		$symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#666666"); 
-		$basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#dddddd"); 
-		$symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#666666"); 
-		$basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#dddddd"); 
-		$symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#666666"); 
-		$slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#666666"); 
-		$slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#666666"); 
-		$shadowcolor = get_option("esaudioplayer_shadowcolor", "#888888"); 
-		$shadowsize = get_option("esaudioplayer_shadowsize", "0.1"); 
+		$basecolor_play = get_option("esaudioplayer_basecolor_play", "#dbdbdb"); 
+		$symbolcolor_play = get_option("esaudioplayer_symbolcolor_play", "#44cc00"); 
+		$basecolor_stop = get_option("esaudioplayer_basecolor_stop", "#dbdbdb"); 
+		$symbolcolor_stop = get_option("esaudioplayer_symbolcolor_stop", "#ff1505"); 
+		$basecolor_pause = get_option("esaudioplayer_basecolor_pause", "#dbdbdb"); 
+		$symbolcolor_pause = get_option("esaudioplayer_symbolcolor_pause", "#ff7d24"); 
+		$slidercolor_line = get_option("esaudioplayer_slidercolor_line", "#999999"); 
+		$slidercolor_knob = get_option("esaudioplayer_slidercolor_knob", "#292929"); 
+		$shadowcolor = get_option("esaudioplayer_shadowcolor", "#a9a9a9"); 
+		$shadowsize = get_option("esaudioplayer_shadowsize", "0.25"); 
+		$cornersize = get_option("esaudioplayer_cornersize", "18"); 
+		$smartphonesize = get_option("esaudioplayer_smartphonesize", "100"); 
 
 		EsAudioPlayer_read_accessibility_setting(); 
 		$acc_text_enable = $esplayer_acc_text_enable; 
@@ -674,7 +708,6 @@ function esaudioplayer_magic_function()
 		<td> <input type="text" id="esaudioplayer_symbolcolor_stop" name="esaudioplayer_symbolcolor_stop" value="<?php echo $symbolcolor_stop; ?>" /></td>
 		</tr>
 
-		</tr>
 		<tr>
 		<th scope="row" style="text-align:right;">Base Color (Pause)</th>
 		<td> <input type="text" id="esaudioplayer_basecolor_pause" name="esaudioplayer_basecolor_pause" value="<?php echo $basecolor_pause; ?>" /></td>
@@ -684,7 +717,6 @@ function esaudioplayer_magic_function()
 		<td> <input type="text" id="esaudioplayer_symbolcolor_pause" name="esaudioplayer_symbolcolor_pause" value="<?php echo $symbolcolor_pause; ?>" /></td>
 		</tr>
 
-		</tr>
 		<tr>
 		<th scope="row" style="text-align:right;">Slider Color (line)</th>
 		<td> <input type="text" id="esaudioplayer_slidercolor_line" name="esaudioplayer_slidercolor_line" value="<?php echo $slidercolor_line; ?>" /></td>
@@ -694,16 +726,89 @@ function esaudioplayer_magic_function()
 		<td> <input type="text" id="esaudioplayer_slidercolor_knob" name="esaudioplayer_slidercolor_knob" value="<?php echo $slidercolor_knob; ?>" /></td>
 		</tr>
 
-		</tr>
 		<tr>
 		<th scope="row" style="text-align:right;">Shadow Size</th>
-		<td><input type="text" name="esaudioplayer_shadowsize" value="<?php echo $shadowsize; ?>" /></td>
+		<td><input type="text" id="esaudioplayer_shadowsize" name="esaudioplayer_shadowsize" value="<?php echo $shadowsize; ?>" /></td>
 		</tr>
 		<tr>
 		<th scope="row" style="text-align:right;">Shadow Color</th>
 		<td><input type="text" id="esaudioplayer_shadowcolor" name="esaudioplayer_shadowcolor" value="<?php echo $shadowcolor; ?>" /></td>
 		</tr>
+
+		<tr>
+		<th scope="row" style="text-align:right;">Corner radius (% of shorter side)</th>
+		<td><input type="text" id="esaudioplayer_cornersize" name="esaudioplayer_cornersize" value="<?php echo $cornersize; ?>" /></td>
+		</tr>
+		<tr>
+		<th scope="row" style="text-align:right;">Smartphone size (% of normal size)</th>
+		<td><input type="text" id="esaudioplayer_smartphonesize" name="esaudioplayer_smartphonesize" value="<?php echo $smartphonesize; ?>" /></td>
+		</tr>
 		</table>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Preview)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<div id="esplayer_1_tmpspan" style="display:inline;"><canvas id="esplayer_1" style="cursor:pointer;"></canvas></div>
+<div id="esplayer_2_tmpspan" style="display:inline;"><canvas id="esplayer_2" style="cursor:pointer;"></canvas></div>
+<div id="esplayer_3_tmpspan" style="display:inline;"><canvas id="esplayer_3" style="cursor:pointer;"></canvas></div>
+<div id="esplayer_4_tmpspan" style="display:inline;"><canvas id="esplayer_4" style="cursor:pointer;"></canvas></div>
+<script type="text/javascript">
+
+var esplayer_basecolor_play;
+var esplayer_symbolcolor_play;
+var esplayer_basecolor_stop;
+var esplayer_symbolcolor_stop;
+var esplayer_basecolor_pause;
+var esplayer_symbolcolor_pause;
+var esplayer_color_slider_line;
+var esplayer_color_slider_knob;
+var esplayer_shadowsize;
+var esplayer_shadowcolor;
+var esplayer_cornersize;
+var esplayer_smartphonesize;
+
+function esplayer_reflect_setting()
+{
+	esplayer_basecolor_play = jQuery('#esaudioplayer_basecolor_play').val();
+	esplayer_symbolcolor_play = jQuery('#esaudioplayer_symbolcolor_play').val();
+	esplayer_basecolor_stop = jQuery('#esaudioplayer_basecolor_stop').val();
+	esplayer_symbolcolor_stop = jQuery('#esaudioplayer_symbolcolor_stop').val();
+	esplayer_basecolor_pause = jQuery('#esaudioplayer_basecolor_pause').val();
+	esplayer_symbolcolor_pause = jQuery('#esaudioplayer_symbolcolor_pause').val();
+	esplayer_color_slider_line = jQuery('#esaudioplayer_slidercolor_line').val();
+	esplayer_color_slider_knob = jQuery('#esaudioplayer_slidercolor_knob').val();
+	esplayer_shadowsize = jQuery('#esaudioplayer_shadowsize').val();
+	esplayer_shadowcolor = jQuery('#esaudioplayer_shadowcolor').val();
+	esplayer_cornersize = jQuery('#esaudioplayer_cornersize').val();
+	esplayer_smartphonesize = jQuery('#esaudioplayer_smartphonesize').val();
+}
+esplayer_reflect_setting();
+
+var esplayervar1;
+jQuery(document).ready(function() {
+esplayervar1 = new EsAudioPlayer("simple", "esplayer_1", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+var esplayervar2;
+jQuery(document).ready(function() {
+esplayervar2 = new EsAudioPlayer("simple", "esplayer_2", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+var esplayervar3;
+jQuery(document).ready(function() {
+esplayervar3 = new EsAudioPlayer("simple", "esplayer_3", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+var esplayervar4;
+jQuery(document).ready(function() {
+esplayervar4 = new EsAudioPlayer("simple", "esplayer_4", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+
+function esplayer_preview_update()
+{
+	esplayer_reflect_setting();	
+	esplayervar2.func_acc_play();esplayervar4.func_acc_play();
+	esplayervar1.getSetting(true);
+	esplayervar2.getSetting(true);
+	esplayervar3.getSetting(true);
+	esplayervar4.getSetting(true);
+}
+setTimeout('setInterval("esplayer_preview_update()",100);',1000);
+</script>
+
 
 		<h3>Accessibility Settings</h3>
 
@@ -821,8 +926,10 @@ function esaudioplayer_magic_function()
 function EsAudioPlayer_admin_head()
 {
 	global $esAudioPlayer_plugin_URL;
+	echo  "<!--[if lt IE 9]><script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/excanvas.js\"></script><![endif]-->\n";
 	echo "<link rel='stylesheet' href='". $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.css' type='text/css' media='all' />\n";
 	echo "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.min.js\"></script>\n";
+	echo "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";
 }
 add_action( 'admin_head', 'EsAudioPlayer_admin_head' ); 
 

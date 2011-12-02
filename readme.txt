@@ -4,7 +4,7 @@ Donate link: http://tempspace.net/plugins/
 Tags: audio,player,cross-browser,cross-platform,accessibility,accessible,cross,browser,platform,slideshow,mp3,mp3 player,audio player,soundmanager2
 Requires at least: 3.2.0
 Tested up to: 3.3
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 
 This is a simple, cross-browser, accessible audio player (MP3 player) plugin.
 
@@ -46,11 +46,14 @@ It means 'Extremely Simple Audio Player'. At the beginning, this player had only
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the directory of the stable readme.txt, so in this case, `/tags/4.3/screenshot-1.png` (or jpg, jpeg, gif)
-2. This is the second screen shot
+1. This is a preview in the color setting in the admin screen
 
 == Changelog ==
+
+= 1.5.0 =
+* Added a live preview in the color setting screen.
+* Added adjustment of corner radius.
+* Added adjustment of size for smartphones.
 
 = 1.4.0 =
 * You can put a player in a sidebar text widget.

@@ -1,30 +1,36 @@
 var esplayer_debug = false;
+var esplayer_isAdmin = false;
+if (typeof soundManager == 'undefined') {
+	esplayer_isAdmin = true;
+}
 
-soundManager.url = esAudioPlayer_plugin_URL + '/swf/';
-soundManager.flashVersion = 8; // optional: shiny features (default = 8)
-soundManager.useFlashBlock = false; // optionally, enable when you're ready to dive in
-// enable HTML5 audio support, if you're feeling adventurous. iPad/iPhone will always get this.
-soundManager.useHTML5Audio = true;
-soundManager.preferFlash = true;
-soundManager.debugMode = false;
-soundManager.debugFlash = false;
-soundManager.allowpolling = true;
-soundManager.useConsole = true;
 var Array_EsAudioPlayer = new Array();
 var esp_playing_no = 0;
 var soundManager_ready = false;
-soundManager.onready(function() {
-	soundManager_ready = true;
-});
-
 var esplayer_jquery_prepared = false;
 
 jQuery(document).ready(function(){
 	esplayer_jquery_prepared = true
 });
 
+if (!esplayer_isAdmin) {
+	soundManager.url = esAudioPlayer_plugin_URL + '/swf/';
+	soundManager.flashVersion = 8; // optional: shiny features (default = 8)
+	soundManager.useFlashBlock = false; // optionally, enable when you're ready to dive in
+	// enable HTML5 audio support, if you're feeling adventurous. iPad/iPhone will always get this.
+	soundManager.useHTML5Audio = true;
+	soundManager.preferFlash = true;
+	soundManager.debugMode = false;
+	soundManager.debugFlash = false;
+	soundManager.allowpolling = true;
+	soundManager.useConsole = true;
+	soundManager.onready(function() {
+		soundManager_ready = true;
+	});
+}
 
-var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, border_img, loop, duration, img_id, artist, title) {
+
+var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, corner_size, smartphone_size, border_img, loop, duration, img_id, artist, title) {
 	this.basecolor_play = '';
 	this.symbolcolor_play = '';
 	this.basecolor_stop = '';
@@ -58,11 +64,12 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	this.canvas_height = height;
 	this.shw_rate = shadow_size;
 	this.shw_color = shadow_color;
+	this.corner_rate = (corner_size==-999)?-999:corner_size/100.0;
+	this.smartphone_rate = (smartphone_size==-999)?-999:smartphone_size/100.0;
 	this.shw_size = 0;
 	this.start_anim_retry = 0;
 	this.start_time = 0;
 	this.anim_ok = false;
-	this.setting_ok = false;
 	this.nowPlaying = 0;
 	this.border_img = border_img;
 	this.debug_msg = '';
@@ -88,7 +95,7 @@ EsAudioPlayer.prototype.init = function()
 	var that = this;
 	this.GetSizeInPx();
 
-	this.sx_st = this.height /*+ (this.height*0.3)*/;
+	this.sx_st = this.height + (this.height*0.15);
 	this.sx_en = this.width - (this.height*0.3);
 	this.sy= this.canvas_height /2;
 	this.slider_x = -1;
@@ -98,8 +105,8 @@ EsAudioPlayer.prototype.init = function()
 
 	this.slider_length = (this.width>=this.height*2) ? this.sx_en - this.sx_st : 0;
 	this.slider_drag=false;
-	this.slider_width = this.height*0.07;
-	this.slider_height = this.height*0.4;
+	this.slider_width = this.height*0.1;
+	this.slider_height = this.height*0.5;
 	this.slider_img = new Image();
 
 	if (this.mode=="simple") {
@@ -118,8 +125,7 @@ EsAudioPlayer.prototype.init = function()
 		//});
 	}
 
-	function callMethod_getSetting() {that.getSetting();}
-	this.getsetting_id = setInterval(callMethod_getSetting, 20);
+	this.getSetting();
 
 	// prepare animation
 	if (!this.isIE) {
@@ -239,8 +245,6 @@ EsAudioPlayer.prototype.startAnim_IE = function()
 // argument : void
 EsAudioPlayer.prototype.initCanvas = function() 
 {
-	if (!this.setting_ok) return;
-
 	this.canvas = document.getElementById(this.id);
 
 	// calculate canvas size 
@@ -272,21 +276,23 @@ EsAudioPlayer.prototype.initCanvas = function()
 // function name: getSetting
 // description : set default setting to the player object.
 // argument : void
-EsAudioPlayer.prototype.getSetting = function() 
+EsAudioPlayer.prototype.getSetting = function(force_reset) 
 {
-	if (this.basecolor_play == '') this.basecolor_play = esplayer_basecolor_play;
-	if (this.symbolcolor_play == '') this.symbolcolor_play = esplayer_symbolcolor_play;
-	if (this.basecolor_stop == '') this.basecolor_stop = esplayer_basecolor_stop;
-	if (this.symbolcolor_stop == '') this.symbolcolor_stop = esplayer_symbolcolor_stop;
-	if (this.basecolor_pause == '') this.basecolor_pause = esplayer_basecolor_pause;
-	if (this.symbolcolor_pause == '') this.symbolcolor_pause = esplayer_symbolcolor_pause;
-	if (this.color_slider_line == '') this.color_slider_line = esplayer_color_slider_line;
-	if (this.color_slider_knob == '') this.color_slider_knob = esplayer_color_slider_knob;
-	if (this.shw_rate == -999) this.shw_rate = esplayer_shadowsize;
-	if (this.shw_color == '') this.shw_color = esplayer_shadowcolor;
+	fr = typeof(force_reset) != 'undefined' ? true : false;
+	if (this.basecolor_play == '' || fr) this.basecolor_play = esplayer_basecolor_play;
+	if (this.symbolcolor_play == '' || fr) this.symbolcolor_play = esplayer_symbolcolor_play;
+	if (this.basecolor_stop == '' || fr) this.basecolor_stop = esplayer_basecolor_stop;
+	if (this.symbolcolor_stop == '' || fr) this.symbolcolor_stop = esplayer_symbolcolor_stop;
+	if (this.basecolor_pause == '' || fr) this.basecolor_pause = esplayer_basecolor_pause;
+	if (this.symbolcolor_pause == '' || fr) this.symbolcolor_pause = esplayer_symbolcolor_pause;
+	if (this.color_slider_line == '' || fr) this.color_slider_line = esplayer_color_slider_line;
+	if (this.color_slider_knob == '' || fr) this.color_slider_knob = esplayer_color_slider_knob;
+	if (this.shw_rate == -999 || fr) this.shw_rate = esplayer_shadowsize;
+	if (this.shw_color == '' || fr) this.shw_color = esplayer_shadowcolor;
+	if (this.corner_rate == -999 || fr) this.corner_rate = esplayer_cornersize/100.0;
+	if (this.smartphone_rate == -999 || fr) this.smartphone_rate = esplayer_smartphonesize/100.0;
 	this.shw_size = Math.min(   Math.min(this.width, this.height)*this.shw_rate   , 100);
-	clearInterval(this.getsetting_id);
-	this.setting_ok = true;
+	if (fr) {this.preventDrawing=false;this.anim();}
 }
 
 
@@ -295,6 +301,25 @@ EsAudioPlayer.prototype.getSetting = function()
 // argument : void
 EsAudioPlayer.prototype.initSound = function() 
 {
+	if (esplayer_isAdmin) {
+		// Creating dummy soundmanager object for preview in the admin page.
+		function DMY(){}; 
+		DMY.prototype.setPosition = function(p){this.position=p;};
+		DMY.prototype.play = function(){this.playState=1;};
+		DMY.prototype.stop = function(){this.playState=0;};
+		DMY.prototype.pause = function(){};
+		this.mySound[0]=new DMY;
+		this.mySound[0].BytesLoaded = 1; 
+		this.mySound[0].playState=0;
+		this.mySound[0].duration=this.duration;
+		this.mySound[0].durationEstimate=this.duration;
+		this.mySound[0].position=0;
+		this.mySound[0].bytesTotal=1;
+		this.mySoundPosition[0] = 0;
+		this.created=true;
+		return;
+	}
+
 	if (!this.created) {
 
 		if (this.mode == "slideshow" && !esp_tt_data_ready) {
@@ -347,6 +372,8 @@ EsAudioPlayer.prototype.initSound = function()
 // argument : ev (event)
 EsAudioPlayer.prototype.onClick = function(ev)
 {
+	if (esplayer_isAdmin) return;
+
 	this.preventDrawing = false;
 	this.ofs = jQuery(this.canvas).offset();
 
@@ -354,7 +381,7 @@ EsAudioPlayer.prototype.onClick = function(ev)
 	var py = this.getEv(ev).pageY - this.ofs.top;
 
 	var btn_width = this.width>=this.height*2 ? this.height : this.width;
-	if (px>=1 && py>=1 && px<btn_width-this.shw_size && py<this.height-this.shw_size) {
+	if (px>=1 && py>=1 && px<btn_width/*-this.shw_size*/ && py<this.height/*-this.shw_size*/) {
 		this.func_play_stop();
 	}
 
@@ -449,7 +476,9 @@ EsAudioPlayer.prototype.draw_button_base = function(x1,y1,x2,y2, base_color)
 	this.ie_shadow(ctx,x1,y1,x2,y2);
 	ctx.fillStyle = base_color;
 	this.set_button_shadow(ctx, true);
-	ctx.fillRect(x1,y1,x2-x1,y2-y1);
+	ctx.fillRoundedRect/*fillRect*/(x1,y1,x2-x1,y2-y1, Math.min(x2-x1,y2-y1)*this.corner_rate);
+
+
 	this.set_button_shadow(ctx, false);
 }
 
@@ -518,7 +547,7 @@ EsAudioPlayer.prototype.ie_shadow = function(ctx,x1,y1,x2,y2,color,size)
 	if (this.isIE) {
 		ctx.fillStyle = this.shw_color;
 		var size = this.shw_size;
-		ctx.fillRect(x1+size*.9,y1+size*.9,(x2-x1),(y2-y1));
+		ctx.fillRoundedRect/*fillRect*/(x1+size*.9,y1+size*.9,(x2-x1),(y2-y1), Math.min(x2-x1,y2-y1)*this.corner_rate);
 	}
 }
 
@@ -528,18 +557,18 @@ EsAudioPlayer.prototype.ie_shadow = function(ctx,x1,y1,x2,y2,color,size)
 // argument : void
 EsAudioPlayer.prototype.anim = function() 
 {
-
 	if (this.mySound[this.nowPlaying] === undefined) return;
 
 	// Turning off playing indicator by finishing playing.
 	if (this.mySound[this.nowPlaying].playState) {
 		this.flgInitializing_beforePlaying = false;
 	}
-	if (this.play && !this.mySound[this.nowPlaying].playState && !this.flgInitializing_beforePlaying) {
+	if (this.play && !this.mySound[this.nowPlaying].playState && !this.flgInitializing_beforePlaying && !esplayer_isAdmin) {
 		this.func_stop();
 	}
+
 //jQuery('.main_meta h2').html(this.anim_ok?'true':'false');
-	if (!this.anim_ok || !this.setting_ok) return;
+	if (!this.anim_ok) return;
 	if (this.preventDrawing) return;
 
 //jQuery('.main_meta h2').html(cnt++);
@@ -569,11 +598,11 @@ EsAudioPlayer.prototype.anim = function()
 		if (this.slider_length > 0) {
 			var b_y = this.height * 0.5;
 			ctx.fillStyle = this.color_slider_line;
-			ctx.fillRect(this.sx_st, b_y-this.height*0.02/2, this.sx_en -this.sx_st ,this.height*0.02);
+			ctx.fillRect(this.sx_st, b_y-this.height*0.03/2, this.sx_en -this.sx_st ,this.height*0.03);
 			var ms = this.mySound[this.nowPlaying];
 			if (!(ms.bytesLoaded === undefined || ms.bytesLoaded === null)) {
 				ctx.fillStyle = this.color_slider_line;
-				ctx.fillRect(this.sx_st, b_y-this.height*0.04/2, (this.sx_en-this.sx_st)*(ms.bytesLoaded/ms.bytesTotal) ,this.height*0.04);
+				ctx.fillRect(this.sx_st, b_y-this.height*0.06/2, (this.sx_en-this.sx_st)*(ms.bytesLoaded/ms.bytesTotal) ,this.height*0.06);
 			}
 
 			var position;
@@ -582,8 +611,6 @@ EsAudioPlayer.prototype.anim = function()
 			else 
 				position = this.mySoundPosition[this.nowPlaying];
 
-//jQuery('.main_meta h2').html(ms.bytesLoaded + '<br>' + ms.bytesTotal+'<br>'+ms.duration+'<br>'+ms.durationEstimate);
-
 			var xpos = 0;
 			if (!this.slider_drag) {
 				this.slider_y = b_y;
@@ -591,6 +618,7 @@ EsAudioPlayer.prototype.anim = function()
 				var est_dur = (this.duration>0) ? this.duration : ms.durationEstimate;
 				var duration = (ms.bytesLoaded!=ms.bytesTotal) ? est_dur : ms.duration;
 
+//jQuery('h2').html('ms.bytesLoaded='+ms.bytesLoaded+' ms.bytesTotal='+ms.bytesTotal+' ms.duration='+ms.duration+' ms.position='+ms.position);
 				if (duration) {
 					this.slider_x = this.sx_st+(this.sx_en-this.sx_st)*(position/duration);
 					xpos = this.slider_x -this.slider_width/2;
@@ -601,13 +629,35 @@ EsAudioPlayer.prototype.anim = function()
 				xpos = this.slider_x - this.slider_width/2;
 			}
 			ctx.fillStyle = this.color_slider_knob;
-			ctx.fillRect(xpos ,b_y-this.slider_height/2, this.slider_width, this.slider_height);
+			ctx.fillRect(xpos-this.slider_width/2 ,b_y-this.slider_height/2, this.slider_width, this.slider_height);
 		}
 	}
 
 	if (!this.created) return;
 	if (!this.play) this.preventDrawing = true;
 }
+
+CanvasRenderingContext2D.prototype.fillRoundedRect = fillRoundedRect;
+    /*
+        x: Upper left corner's X coordinate
+        y: Upper left corner's Y coordinate
+        w: Rectangle's width
+        h: Rectangle's height
+        r: Corner radius
+    */
+    function fillRoundedRect(x, y, w, h, r){
+        this.beginPath();
+        this.moveTo(x+r, y);
+        this.lineTo(x+w-r, y);
+        this.quadraticCurveTo(x+w, y, x+w, y+r);
+        this.lineTo(x+w, y+h-r);
+        this.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+        this.lineTo(x+r, y+h);
+        this.quadraticCurveTo(x, y+h, x, y+h-r);
+        this.lineTo(x, y+r);
+        this.quadraticCurveTo(x, y, x+r, y);
+        this.fill();        
+    }
 
 
 // function name: func_play_stop
@@ -657,6 +707,7 @@ EsAudioPlayer.prototype.func_play_stop = function()
 // argument : void
 EsAudioPlayer.prototype.func_stop_all_the_other_players = function()
 {
+	if (esplayer_isAdmin) return;
 	for (i=0; i<Array_EsAudioPlayer.length; i++) {
 		if (Array_EsAudioPlayer[i].id != this.id) {
 			if (Array_EsAudioPlayer[i].play) {
