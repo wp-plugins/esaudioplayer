@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.5.0
+Version: 1.5.1
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -212,8 +212,6 @@ function EsAudioPlayer_filter_0($raw_text)
 add_filter('the_content',  "EsAudioPlayer_filter_0", 10) ;
 
 
-
-$esplayer_script = "";
 $esplayer_mode = "x";
 
 function EsAudioPlayer_read_accessibility_setting()
@@ -273,7 +271,8 @@ EsAudioPlayer_read_accessibility_setting();
 function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $player_number;
 	global $esplayer_imgs_num, $esplayer_imgs, $esplayer_imgs_player_number;
-	global $esplayer_script;
+	global $esplayer_script_var;
+	global $esplayer_script_body;
 	global $esplayer_mode;
 	global $esplayer_acc_text_enable;
 	global $esplayer_acc_msg_download;
@@ -316,6 +315,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$border_img="0";
 	$esplayer_mode="0";
 	$loop="false";
+	$autoplay="false";	
 	$duration="";
 	$acc_basic_btns="";
 	$acc_fwd_btn="";
@@ -407,65 +407,55 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$title_utf8="";
 	$artist_utf8="";
 	
-	$esplayer_script = $esplayer_script . "var " . $js_var . ";\njQuery(document).ready(function() {\n";
+	$esplayer_script_var .= "var " . $js_var . ";\n";
 
 	if ($esplayer_mode=="simple") {
 		//$esplayer_script = $esplayer_script . "ReplaceContainingCanvasPtag2div('".$id."_tmpspan');\n";
 	}
-	$esplayer_script = $esplayer_script . $js_var . " = new EsAudioPlayer(\"" 
+
+	$ret .= "<input type=\"hidden\" id=\"".$js_var."\" value=\""
 		. $esplayer_mode
-		. '", "' 
+		. '|' 
 		. $id 
-		. '", "' 
+		. '|' 
 		. ($esplayer_mode=="slideshow"?$timetable_id:$url) 
-		. '", "' 
+		. '|' 
 		. $width
-		. '", "' 
+		. '|' 
 		. $height
-		. '", "' 
+		. '|' 
 		. $vp
-		. '", '
+		. '|'
 		. $shadow_size
-		. ', "' 
+		. '|' 
 		. $shadow_color
-		. '", '
+		. '|'
 		. $corner_size
-		. ', '
+		. '|'
 		. $smartphone_size
-		. ', "' 
+		. '|' 
 		. $border_img 
-		. '", ' 
+		. '|' 
 		. $loop
-		. ', "'
+		. '|'
+		. $autoplay
+		. '|'
 		. $duration 
-		. '", "' 
+		. '|' 
 		. $img_id
-		. '", "' 
+		. '|' 
 		. $artist_utf8 
-		. '", "' 
+		. '|' 
 		. $title_utf8 
-		. "\"); });\n";
-	if ($img != "") {
-		$esplayer_script = $esplayer_script . "document.getElementById('img_esplayer_".(string)($player_number)."').style.cursor=\"pointer\";\n";
-	}
+		. "\">\n";
 
 	$player_number ++;
 	return $ret;
 }
 
-add_shortcode('esplayer', 'EsAudioPlayer_shortcode',12);
+add_shortcode('esplayer', 'EsAudioPlayer_shortcode',11);
+add_filter('widget_text', 'do_shortcode');
 
-function EsAudioPlayer_filter_2($raw_text) {
-	global $player_number;
-	if ($player_number == 1) return $raw_text;
-	global $esplayer_script;
-	$ret = $raw_text . "<script type=\"text/javascript\">\n" . $esplayer_script . "</script>\n";
-	$esplayer_script = "";
-	return $ret;
-}
-
-add_filter('the_content',  "EsAudioPlayer_filter_2", 98) ;
-add_filter('widget_text',  "EsAudioPlayer_filter_2", 99) ;
 
 
 include 'EsAudioPlayer_tt.php';

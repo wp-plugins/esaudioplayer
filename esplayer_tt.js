@@ -37,8 +37,10 @@ var EsAudioPlayer_tt = function(esp_obj) {
 	this.imgs = new Array();
 	this.player_id = this.esp_obj.id;
 	this.nowplaying = false;
+	this.nowtotalplaying = false;
 	this.tt_id_list = this.esp_obj.tt_id_list;
 	this.playing_tt = this.tt_id_list[0];  // the id code of the time table now playing
+	this.playing_tt_idx = 0;
 	this.playing_tt_data_pos = 0; // the current reference position of 'time' data in the timetable
 	this.playing_tt_data_num = 0; // number of data of slideshow now playing
 	this.playing_tt_flag = false; // a boolean flag indicates if the slideshow is playing now
@@ -46,6 +48,7 @@ var EsAudioPlayer_tt = function(esp_obj) {
 	this.box_id = '#'+this.player_id+'_tmpspan';
 	this.box_width = jQuery(this.box_id).width();
 	this.box_height = jQuery(this.box_id).height();
+	this.ready = false;
 
 	this.start_time = 0;	// the value of system clock at the time when slideshow started
 	this.playing_func_id = -1;  // the administrative code of function which play the slideshow
@@ -73,30 +76,33 @@ var EsAudioPlayer_tt = function(esp_obj) {
 	jQuery(this.box_id).css('cursor','pointer');
 
 	jQuery(this.box_id).bind(this.esp_obj.isSmartphone ? 'touchstart' : 'mousedown', function(event){
+		esp_auto_playing = -1;
 		if (that.esp_obj.play === false) {
 			this.that = this;
-			that.launch_tt(that.tt_id_list[0]);
+			that.launch_tt(0);
 		} else {
 			that.esp_obj.func_stop();
 			that.stop_slideshow();
 		}
 	});
+	this.ready = true;
 }
 
 
 // function name: launch_tt
 // description : starting slideshow
 // argument : tt_id (id of timetable)
-EsAudioPlayer_tt.prototype.launch_tt = function(tt_id)
+EsAudioPlayer_tt.prototype.launch_tt = function(tt_id_list_idx)
 {
 	if (this.esp_obj.created === false) {
 		return;
 	}
 
+	tt_id = this.tt_id_list[tt_id_list_idx];
 	this.playing_tt = tt_id;
 	this.prepare_tt(tt_id);
-
 	this.nowplaying = true;
+	this.nowtotalplaying = true;	
 
 	this.playing_tt_data_pos = -1;
 	var that = this;
@@ -167,23 +173,26 @@ EsAudioPlayer_tt.prototype.play_tt = function()
 	}
 
 	if (next_data_pos >= this.playing_tt_data_num && !this.esp_obj.play) { // when current slideshow ends
-		var i;
-		for (i=0;i<this.tt_id_list.length; i++) {
-			if (this.tt_id_list[i] == this.playing_tt) { // obtain index of current slideshow
-				i++;
-				if (i>=this.tt_id_list.length) {
-					i=0;
-				}
-				clearInterval(this.playing_func_id); // stop slideshow
-				this.playing_func_id = -1;
-				var that = this;
-				if (i==0 && this.esp_obj.loop==false) return; // if loop-flag is off and every slideshow end, then finish entire process
-				this.nowplaying = false;
-				setTimeout(function(){that.launch_tt(that.tt_id_list[i]);}, 100);
-				return;
+
+		clearInterval(this.playing_func_id); // stop slideshow
+		this.playing_func_id = -1;
+
+		this.playing_tt_idx ++;
+		if (this.playing_tt_idx == this.tt_id_list.length) {
+			if (this.esp_obj.loop==false) {
+				esplayer_autoplay_next();
+				this.nowtotalplaying = false;
+				return; // if loop-flag is off and every slideshow end, then finish entire process
 			}
+			this.playing_tt_idx = 0;
 		}
+			
+		var that = this;
+		this.nowplaying = false;
+		setTimeout(function(){that.launch_tt(that.playing_tt_idx);}, 100);
+		return;
 	}
+
 	var tt_id = this.playing_tt;
 	if (esp_tt_data[tt_id].time[next_data_pos] < time) { // show next picture
 		var duration = esp_tt_data[tt_id].duration[next_data_pos];
@@ -210,6 +219,7 @@ EsAudioPlayer_tt.prototype.stop_slideshow = function()
 	clearInterval(this.playing_func_id);
 	this.playing_func_id = -1;
 	this.nowplaying = false;
+	this.nowtotalplaying = false;
 }
 
 
@@ -334,10 +344,11 @@ EsAudioPlayer_tt.prototype.load_an_image = function(tt_id, img_no)
 		jQuery.data(img,'height',  -1);
 	}
 
+	var that = this;
 	jQuery(img).load(function(response, status, xhr) {
 		var idi = jQuery(this).parent().attr('id');
 		esp_img_loadflg[idi][1]=true;
-		this.loading_num --;
+		that.loading_num --;
 		var obj=jQuery.data(this,'obj');	// obtain EsAudioPlayer_tt object
 		// if image size is not specified, shrink the image so that it can be conteined in the display area.
 		if (jQuery(this).data('width')==-1) {  

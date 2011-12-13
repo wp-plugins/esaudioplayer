@@ -6,11 +6,38 @@ if (typeof soundManager == 'undefined') {
 
 var Array_EsAudioPlayer = new Array();
 var esp_playing_no = 0;
+var esp_auto_playing = 0;
+var esp_auto_playing_player_num = 0;
 var soundManager_ready = false;
 var esplayer_jquery_prepared = false;
 
 jQuery(document).ready(function(){
-	esplayer_jquery_prepared = true
+	esplayer_jquery_prepared = true;
+
+	for (var i=1; i<2048 ; i++) {
+		var params = jQuery("#esplayervar"+i).val();
+		if (typeof params == 'undefined') break;
+		var args = params.split("|");
+		var a = new EsAudioPlayer(
+			args[0],
+			args[1],
+			args[2],
+			args[3],
+			args[4],
+			args[5],
+			args[6],
+			args[7],
+			args[8],
+			args[9],
+			args[10],
+			(args[11].toLowerCase()=="true"),	//loop
+			(args[12].toLowerCase()=="true"),	//autoplay
+			args[13],
+			args[14],
+			args[15],
+			args[16]);
+	}
+	esplayer_autoplay(i-1);
 });
 
 if (!esplayer_isAdmin) {
@@ -29,8 +56,54 @@ if (!esplayer_isAdmin) {
 	});
 }
 
+function esplayer_autoplay(player_num)
+{
+	player_num = typeof(player_num) != 'undefined' ? player_num : 0;
+	if (player_num > 0) esp_auto_playing_player_num = player_num;
+	if (esp_auto_playing < 0) return;
 
-var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, corner_size, smartphone_size, border_img, loop, duration, img_id, artist, title) {
+	if (Array_EsAudioPlayer.length < esp_auto_playing_player_num) {
+		setTimeout('esplayer_autoplay()', 100);
+		return;
+	}
+
+	if (esp_playing_no) {
+		setTimeout('esplayer_autoplay()', 100);
+		return;
+	}
+
+	for (var i=esp_auto_playing; i<esp_auto_playing_player_num; i++) {
+		if (Array_EsAudioPlayer[i].autoplay) {
+			esp_auto_playing = i;
+			break;
+		}
+	}
+	if (i>=esp_auto_playing_player_num) {
+		esp_auto_playing = -1;
+		return;
+	}
+	var ep = Array_EsAudioPlayer[esp_auto_playing];
+	if ((ep.created && ep.mode!="slideshow") || (ep.created && ep.mode=="slideshow" && ep.tt_obj.ready && !ep.tt_obj.nowtotalplaying)) {
+		if (ep.mode=="slideshow") {
+			ep.tt_obj.loadimage();
+			ep.tt_obj.launch_tt(0);
+		} else {
+			ep.func_acc_play_stop();
+		}
+	} else {
+		setTimeout('esplayer_autoplay()', 100);
+		return;
+	}
+}
+
+function esplayer_autoplay_next()
+{
+	if (esp_auto_playing<0) return;
+	esp_auto_playing ++;
+	setTimeout('esplayer_autoplay()', 100);
+}
+
+var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, corner_size, smartphone_size, border_img, loop, autoplay, duration, img_id, artist, title) {
 	this.basecolor_play = '';
 	this.symbolcolor_play = '';
 	this.basecolor_stop = '';
@@ -76,7 +149,9 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	this.duration = this.calc_duration(duration); //manually specified duration of audio (milliseconds)
 	this.mode = mode;	// 'simple' or 'slideshow' or 'imgclick'
 	this.loop = loop;
+	this.autoplay = autoplay;	
 	this.tt_id_list = new Array();   // Time table ID list
+	this.ready = false;
 	
 	var that = this;
 
@@ -154,8 +229,10 @@ EsAudioPlayer.prototype.init = function()
 		}
 
 		jQuery(el).bind(that.isSmartphone ? "touchstart":"mousedown", function(event){
+			esp_auto_playing = -1;
 			that.func_play_stop(); 
 		});
+		jQuery(el).css('cursor','pointer');
 	}
 
 	// sound initialization
@@ -382,6 +459,7 @@ EsAudioPlayer.prototype.onClick = function(ev)
 
 	var btn_width = this.width>=this.height*2 ? this.height : this.width;
 	if (px>=1 && py>=1 && px<btn_width/*-this.shw_size*/ && py<this.height/*-this.shw_size*/) {
+		esp_auto_playing = -1;
 		this.func_play_stop();
 	}
 
@@ -565,6 +643,7 @@ EsAudioPlayer.prototype.anim = function()
 	}
 	if (this.play && !this.mySound[this.nowPlaying].playState && !this.flgInitializing_beforePlaying && !esplayer_isAdmin) {
 		this.func_stop();
+		if (this.mode!="slideshow") esplayer_autoplay_next(); // even when "slideshow" mode, "anim" watches playing states.
 	}
 
 //jQuery('.main_meta h2').html(this.anim_ok?'true':'false');
@@ -696,7 +775,6 @@ EsAudioPlayer.prototype.func_play_stop = function()
 			this.pause=true;
 		} else if (acc != "play") {
 			this.func_stop();
-			esp_playing_no --;
 		}
 	}
 	this.anim();
@@ -807,7 +885,9 @@ EsAudioPlayer.prototype.func_stop = function()
 			volume:100
 		});
 	}
+	
 	this.anim();
+	esp_playing_no --;
 }
 
 
