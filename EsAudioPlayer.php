@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.5.1
+Version: 1.5.2
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -240,6 +240,9 @@ function EsAudioPlayer_read_accessibility_setting()
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
+	global $esplayer_acc_scr_dmylnk_enable;
+	global $esplayer_acc_scr_dmylnk_msg;
+
 	$esplayer_acc_text_enable = get_option("esaudioplayer_acc_text_enable", "0");
 	$esplayer_acc_msg_download = get_option("esaudioplayer_acc_msg_download", "download the audio");
 	$esplayer_acc_scr_enable = get_option("esaudioplayer_acc_scr_enable", "0");
@@ -264,7 +267,8 @@ function EsAudioPlayer_read_accessibility_setting()
 	$esplayer_acc_scr_frew_amount = get_option("esaudioplayer_acc_scr_frew_amount", "10");
 	$esplayer_acc_scr_frew_unit = get_option("esaudioplayer_acc_scr_frew_unit", "pct");
 	$esplayer_acc_scr_frew_msg = get_option("esaudioplayer_acc_scr_frew_msg", "rewind 10%");
-
+	$esplayer_acc_scr_dmylnk_enable = get_option("esaudioplayer_acc_scr_dmylnk_enable", "0");
+	$esplayer_acc_scr_dmylnk_msg = get_option("esaudioplayer_acc_scr_dmylnk_msg", "%title%");
 }
 EsAudioPlayer_read_accessibility_setting();
 
@@ -298,6 +302,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
+	global $esplayer_acc_scr_dmylnk_enable;
+	global $esplayer_acc_scr_dmylnk_msg;
 
 	do_shortcode($content);
 	$url = "";
@@ -324,6 +330,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$acc_frwd_btn="";
 	$acc_scr_enable="";
 	$smartphonesize=-999;
+	$title="";
 
 
 	extract($atts);
@@ -349,7 +356,6 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	if (is_numeric($vp)) $vp = $vp . "px";
 
 	$id = "esplayer_" . (string)($player_number);
-	$js_var='esplayervar' . (string)($player_number);
 
 	$acc_scr_enable = $esplayer_acc_scr_enable;
 
@@ -374,30 +380,34 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 		$ret .= "<div style=\"display:none;\"><a href=\"" .$url. "\">" . $esplayer_acc_msg_download . "</a></div>";
 	}
 	if ($acc_scr_enable == "1") {
+		$js_var_a = "Array_EsAudioPlayer[".($player_number-1)."]";
 		$ret .= "<div style=\"position:absolute;left:-3000px;\">";
+		if ($esplayer_acc_scr_dmylnk_enable=="1") {
+			$ret .= "<a href=\"#\" onclick=\"".$js_var_a.".func_acc_play();return -1;\">".str_replace("%title%",$title,$esplayer_acc_scr_dmylnk_msg)."</a>" ;
+		}
 		if ($acc_basic_btns == "playstop") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playstop_btn . "' onclick=\"".$js_var.".func_acc_play_stop();return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_msg_playstop_btn) . "' onclick=\"".$js_var_a.".func_acc_play_stop();return -1;\"/>";
 		}
 		if ($acc_basic_btns == "play+stop") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_play_btn . "' onclick=\"".$js_var.".func_acc_play();return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_msg_play_btn) . "' onclick=\"".$js_var_a.".func_acc_play();return -1;\"/>";
 		}
 		if ($acc_basic_btns == "playpause+stop") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_playpause_btn . "' onclick=\"".$js_var.".func_acc_play_pause();return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_msg_playpause_btn) . "' onclick=\"".$js_var_a.".func_acc_play_pause();return -1;\"/>";
 		}
 		if ($acc_basic_btns == "play+stop" || $acc_basic_btns == "playpause+stop") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_msg_stop_btn . "' onclick=\"".$js_var.".func_acc_stop();return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_msg_stop_btn) . "' onclick=\"".$js_var_a.".func_acc_stop();return -1;\"/>";
 		}
 		if ($acc_fwd_btn=="1") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_fw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_fw_amount.",'".$esplayer_acc_scr_fw_unit."');return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_fw_msg) . "' onclick=\"".$js_var_a.".func_acc_seek(".$esplayer_acc_scr_fw_amount.",'".$esplayer_acc_scr_fw_unit."');return -1;\"/>";
 		}
 		if ($acc_rew_btn=="1") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_rew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_rew_amount.",'".$esplayer_acc_scr_rew_unit."');return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_rew_msg) . "' onclick=\"".$js_var_a.".func_acc_seek(-".$esplayer_acc_scr_rew_amount.",'".$esplayer_acc_scr_rew_unit."');return -1;\"/>";
 		}
 		if ($acc_ffwd_btn=="1") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_ffw_msg . "' onclick=\"".$js_var.".func_acc_seek(".$esplayer_acc_scr_ffw_amount.",'".$esplayer_acc_scr_ffw_unit."');return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_ffw_msg) . "' onclick=\"".$js_var_a.".func_acc_seek(".$esplayer_acc_scr_ffw_amount.",'".$esplayer_acc_scr_ffw_unit."');return -1;\"/>";
 		}
 		if ($acc_frew_btn=="1") {
-			$ret .= "<input type='button' title='" . $esplayer_acc_scr_frew_msg . "' onclick=\"".$js_var.".func_acc_seek(-".$esplayer_acc_scr_frew_amount.",'".$esplayer_acc_scr_frew_unit."');return -1;\"/>";
+			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_frew_msg) . "' onclick=\"".$js_var_a.".func_acc_seek(-".$esplayer_acc_scr_frew_amount.",'".$esplayer_acc_scr_frew_unit."');return -1;\"/>";
 		}
 
 		$ret .= "</div>";
@@ -406,7 +416,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	$title_utf8="";
 	$artist_utf8="";
-	
+
+	$js_var='esplayervar' . (string)($player_number);	
 	$esplayer_script_var .= "var " . $js_var . ";\n";
 
 	if ($esplayer_mode=="simple") {
@@ -569,6 +580,8 @@ function esaudioplayer_magic_function()
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
+	global $esplayer_acc_scr_dmylnk_enable;
+	global $esplayer_acc_scr_dmylnk_msg;
 
 	/*  Save Changeボタン押下でコールされた場合、E_POSTに格納された設定情報を保?E */
 	if ( isset($_POST['updateEsAudioPlayerSetting'] ) ) {
@@ -612,6 +625,8 @@ function esaudioplayer_magic_function()
 		update_option('esaudioplayer_acc_scr_frew_amount', $_POST['esaudioplayer_acc_scr_frew_amount']);
 		update_option('esaudioplayer_acc_scr_frew_unit', $_POST['esaudioplayer_acc_scr_frew_unit']);
 		update_option('esaudioplayer_acc_scr_frew_msg', $_POST['esaudioplayer_acc_scr_frew_msg']);
+		update_option('esaudioplayer_acc_scr_dmylnk_enable', isset($_POST['esaudioplayer_acc_scr_dmylnk_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_dmylnk_msg', $_POST['esaudioplayer_acc_scr_dmylnk_msg']);
 	}
 
 	global $esaudioplayer_col_ar;
@@ -675,6 +690,8 @@ function esaudioplayer_magic_function()
 		$acc_scr_frew_amount = $esplayer_acc_scr_frew_amount;
 		$acc_scr_frew_unit = $esplayer_acc_scr_frew_unit;
 		$acc_scr_frew_msg = $esplayer_acc_scr_frew_msg;
+		$acc_scr_dmylnk_enable = $esplayer_acc_scr_dmylnk_enable;
+		$acc_scr_dmylnk_msg = $esplayer_acc_scr_dmylnk_msg;
  		?>
 
 		<h3>Color Settings</h3>
@@ -894,7 +911,13 @@ setTimeout('setInterval("esplayer_preview_update()",100);',1000);
 		</td>
 		</tr>
 
-
+<!--		<tr>
+		<th scope="row" style="text-align:right;">Dummy link to be listed by screen readers</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_dmylnk_enable" value="1" <?php echo $acc_scr_dmylnk_enable=="1"?"checked":""; ?> />Enable<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_dmylnk_msg" value="<?php echo $acc_scr_dmylnk_msg; ?>" />
+		</td>
+		</tr>
+-->
 		</table>
 
 
