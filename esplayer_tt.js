@@ -69,7 +69,7 @@ var EsAudioPlayer_tt = function(esp_obj) {
 
 	// start loading
 	var that = this;
-	function callMethod_loadimage() {that.loadimage();}
+	var callMethod_loadimage = function() {that.loadimage();};
 
 	setInterval(callMethod_loadimage, 200);
 
@@ -115,9 +115,9 @@ EsAudioPlayer_tt.prototype.launch_tt = function(tt_id_list_idx)
 
 	this.esp_obj.func_play_stop();
 	
-	function callMethod() {that.play_tt();}
+	var callMethod = function() {that.play_tt();};
 	this.playing_func_id = setInterval(callMethod, this.esp_obj.isIE ? 10 : 25);
-}
+};
 
 
 // function name: prepare_tt
@@ -137,7 +137,7 @@ EsAudioPlayer_tt.prototype.prepare_tt = function(tt_id)
 			}
 		}
 	}
-}
+};
 
 var debug_disp=false;
 
@@ -202,13 +202,13 @@ EsAudioPlayer_tt.prototype.play_tt = function()
 			this.zindex++;
 			jQuery('#'+this.make_id(tt_id, next_data_pos)+'_i').css('z-index', this.zindex);
 		}
-		this.playing_tt_data_pos = next_data_pos
+		this.playing_tt_data_pos = next_data_pos;
 	}
-}
+};
 
 EsAudioPlayer_tt.prototype.seek_tt = function(millisecond)
 {
-}
+};
 
 // function name: stop_slideshow
 // description : stop slideshow (audio must be stopped by 
@@ -220,7 +220,7 @@ EsAudioPlayer_tt.prototype.stop_slideshow = function()
 	this.playing_func_id = -1;
 	this.nowplaying = false;
 	this.nowtotalplaying = false;
-}
+};
 
 
 // function name: make_id
@@ -230,7 +230,7 @@ EsAudioPlayer_tt.prototype.stop_slideshow = function()
 EsAudioPlayer_tt.prototype.make_id = function(tt_id, i)
 {
 	return 'img_' + this.player_id+'_'+tt_id + '_' + i;
-}
+};
 
 // function name: makediv_for_img
 // description : making div elements which enclose images
@@ -252,7 +252,7 @@ EsAudioPlayer_tt.prototype.makediv_for_img = function(tt_id)
 			esp_img_loadflg[id][1] = false;
 		}
 	}
-}
+};
 
 
 // function name: loadimage
@@ -305,7 +305,7 @@ EsAudioPlayer_tt.prototype.loadimage = function()
 			return;
 		}
 	}
-}
+};
 
 
 
@@ -391,4 +391,4 @@ EsAudioPlayer_tt.prototype.load_an_image = function(tt_id, img_no)
 		id: id_img,
 		src: esp_tt_data[tt_id].img[img_no]
 	});
-}
+};

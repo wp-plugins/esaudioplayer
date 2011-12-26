@@ -1,8 +1,8 @@
 var esplayer_debug = false;
-var esplayer_isAdmin = false;
+/*var esplayer_isAdmin = false;
 if (typeof soundManager == 'undefined') {
 	esplayer_isAdmin = true;
-}
+}*/
 
 var Array_EsAudioPlayer = new Array();
 var esp_playing_no = 0;
@@ -42,7 +42,7 @@ jQuery(document).ready(function(){
 
 if (!esplayer_isAdmin) {
 	soundManager.url = esAudioPlayer_plugin_URL + '/swf/';
-	soundManager.flashVersion = 8; // optional: shiny features (default = 8)
+	soundManager.flashVersion = 9; // optional: shiny features (default = 8)
 	soundManager.useFlashBlock = false; // optionally, enable when you're ready to dive in
 	// enable HTML5 audio support, if you're feeling adventurous. iPad/iPhone will always get this.
 	soundManager.useHTML5Audio = true;
@@ -155,7 +155,7 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	
 	var that = this;
 
-	function callMethod_init() {that.init();}
+	var callMethod_init = function() {that.init();};
 	this.init_id = setInterval(callMethod_init, 100);
 };
 
@@ -205,13 +205,13 @@ EsAudioPlayer.prototype.init = function()
 	// prepare animation
 	if (!this.isIE) {
 		if (this.mode=="simple") {
-			function callMethod_initCanvas() {that.initCanvas();}
+			var callMethod_initCanvas = function() {that.initCanvas();};
 			this.initCanvas_id = setInterval(callMethod_initCanvas, 20);
 		} else {
 			this.anim_ok = true;
 		}
 	} else {
-		function callMethod_IE() {that.startAnim_IE();}
+		var callMethod_IE = function() {that.startAnim_IE();};
 		this.int_IE_id = setInterval(callMethod_IE, 20);
 	}
 
@@ -236,16 +236,16 @@ EsAudioPlayer.prototype.init = function()
 	}
 
 	// sound initialization
-	function callMethod_init() {that.initSound();}
+	var  callMethod_init = function() {that.initSound();};
 	setInterval(callMethod_init, 200);
 
 	// start animation
-	function callMethod() {that.anim();}
+	var callMethod = function() {that.anim();};
 	setInterval(callMethod, 500);
 
 	// add this object to the player list (for exclusive play control)
 	Array_EsAudioPlayer[Array_EsAudioPlayer.length] = this;
-}
+};
 
 
 // function name: GetSizeInPx
@@ -275,7 +275,7 @@ EsAudioPlayer.prototype.GetSizeInPx = function()
 	this.v_pos = parseInt(jQuery(elmt).css('width').replace('px',''));
 	if (vpos_sign == '-') this.v_pos = -this.v_pos;
 	jQuery(elm).css('top', this.v_pos+'px');
-}
+};
 
 
 // function name: calc_duration
@@ -296,7 +296,7 @@ EsAudioPlayer.prototype.calc_duration = function(duration)
 	}
 	dur += parseFloat(sec) * 1000;
 	return dur;
-}
+};
 
 
 // function name: startAnim_IE
@@ -306,7 +306,7 @@ EsAudioPlayer.prototype.startAnim_IE = function()
 {
 	this.start_anim_retry++;
 	if (this.start_anim_retry > 50) {
-		var elem = document.getElementById(this.id)
+		var elem = document.getElementById(this.id);
 		var av = !!(elem.getContext && elem.getContext('2d')); 
 		if (av) {
 			this.initCanvas();
@@ -315,7 +315,7 @@ EsAudioPlayer.prototype.startAnim_IE = function()
 			return;
 		}
 	}
-}
+};
 
 // function name: initCanvas
 // description : initialize canvas element
@@ -345,7 +345,7 @@ EsAudioPlayer.prototype.initCanvas = function()
 	}
 	this.anim_ok = true;
 	clearInterval(this.initCanvas_id);
-}
+};
 
 
 
@@ -370,7 +370,7 @@ EsAudioPlayer.prototype.getSetting = function(force_reset)
 	if (this.smartphone_rate == -999 || fr) this.smartphone_rate = esplayer_smartphonesize/100.0;
 	this.shw_size = Math.min(   Math.min(this.width, this.height)*this.shw_rate   , 100);
 	if (fr) {this.preventDrawing=false;this.anim();}
-}
+};
 
 
 // function name: initSound
@@ -440,7 +440,7 @@ EsAudioPlayer.prototype.initSound = function()
 			}
 		}
 	}
-}
+};
 
 
 
@@ -485,7 +485,7 @@ EsAudioPlayer.prototype.onClick = function(ev)
 		this.mySound.setPosition(this.calc_pos(px));
 	}
 
-}
+};
 
 
 EsAudioPlayer.prototype.getEv = function( event )
@@ -505,7 +505,7 @@ EsAudioPlayer.prototype.onMouseMove = function (ev)
 	this.slider_x = Math.min(this.calc_sx(this.mySound[this.nowPlaying].duration),this.slider_x);
 	this.preventDrawing = false;
 	this.anim();
-}
+};
 
 // function name: onMouseUp
 // description : process mouse/touchpad release event
@@ -516,7 +516,7 @@ EsAudioPlayer.prototype.onMouseUp = function (ev)
 	var that = this;
 	jQuery(document).unbind("mousemove touchmove mouseup touchend");
 	this.slider_drag = false;
-}
+};
 	
 
 // function name: calc_sx
@@ -530,7 +530,7 @@ EsAudioPlayer.prototype.calc_sx = function(pos)
 	var est_dur = (this.duration>0) ? this.duration : ms.durationEstimate;
 	var duration = (ms.bytesLoaded!=ms.bytesTotal) ? est_dur : ms.duration;
 	return this.sx_st + (this.sx_en - this.sx_st)*pos / (duration);
-}
+};
 
 
 // function name: calc_pos
@@ -542,7 +542,7 @@ EsAudioPlayer.prototype.calc_pos = function(sx)
 	var est_dur = (this.duration>0) ? this.duration : ms.durationEstimate;
 	var duration = (ms.bytesLoaded!=ms.bytesTotal) ? est_dur : ms.duration;
 	return (sx - this.sx_st) / (this.sx_en - this.sx_st) * duration;
-}
+};
 
 
 // function name: draw_button_base
@@ -558,7 +558,7 @@ EsAudioPlayer.prototype.draw_button_base = function(x1,y1,x2,y2, base_color)
 
 
 	this.set_button_shadow(ctx, false);
-}
+};
 
 
 // function name: draw_play_button
@@ -574,7 +574,7 @@ EsAudioPlayer.prototype.draw_play_button = function(x1,y1,x2,y2, symbol_color)
 	ctx.closePath();
 	ctx.fillStyle = symbol_color;
 	ctx.fill();
-}
+};
 
 // function name: draw_stop_button
 // description : draw stop button
@@ -584,7 +584,7 @@ EsAudioPlayer.prototype.draw_stop_button = function(x1,y1,x2,y2, symbol_color)
 	var ctx = this.canvas.getContext('2d');
 	ctx.fillStyle = symbol_color;
 	ctx.fillRect(x1+(x2-x1)*0.3 , y1+(y2-y1)*0.3, (x2-x1)*0.4, (y2-y1)*0.4);
-}
+};
 
 // function name: draw_pause_button
 // description : draw pause button
@@ -595,7 +595,7 @@ EsAudioPlayer.prototype.draw_pause_button = function(x1,y1,x2,y2, symbol_color)
 	ctx.fillStyle = symbol_color;
 	ctx.fillRect(x1+(x2-x1)*0.25 , y1+(y2-y1)*0.3, (x2-x1)*0.2, (y2-y1)*0.4);
 	ctx.fillRect(x1+(x2-x1)*0.55 , y1+(y2-y1)*0.3, (x2-x1)*0.2, (y2-y1)*0.4);
-}	
+};
 
 // function name: set_button_shadow
 // description : set parameters of shadow to the 2d context
@@ -615,7 +615,7 @@ EsAudioPlayer.prototype.set_button_shadow = function(ctx, sw)
 		ctx.shadowColor = '#000000';
 
 	}
-}
+};
 
 // function name: ie_shadow
 // description : draw simple shadow (IE)
@@ -627,7 +627,7 @@ EsAudioPlayer.prototype.ie_shadow = function(ctx,x1,y1,x2,y2,color,size)
 		var size = this.shw_size;
 		ctx.fillRoundedRect/*fillRect*/(x1+size*.9,y1+size*.9,(x2-x1),(y2-y1), Math.min(x2-x1,y2-y1)*this.corner_rate);
 	}
-}
+};
 
 
 // function name: anim
@@ -714,7 +714,7 @@ EsAudioPlayer.prototype.anim = function()
 
 	if (!this.created) return;
 	if (!this.play) this.preventDrawing = true;
-}
+};
 
 CanvasRenderingContext2D.prototype.fillRoundedRect = fillRoundedRect;
     /*
@@ -778,7 +778,7 @@ EsAudioPlayer.prototype.func_play_stop = function()
 		}
 	}
 	this.anim();
-}
+};
 
 // function name: func_stop_all_the_other_players
 // description : stop all the other players
@@ -796,7 +796,7 @@ EsAudioPlayer.prototype.func_stop_all_the_other_players = function()
 			}
 		}
 	}
-}
+};
 
 // function name: func_acc_play
 // description : play (accessible button)
@@ -804,10 +804,10 @@ EsAudioPlayer.prototype.func_stop_all_the_other_players = function()
 EsAudioPlayer.prototype.func_acc_play = function()
 {
 	if (!this.play) {
-		this.preventDrawing = false
+		this.preventDrawing = false;
 		this.func_play_stop();
 	}
-}
+};
 
 // function name: func_acc_stop
 // description : stop (accessible button)
@@ -816,25 +816,25 @@ EsAudioPlayer.prototype.func_acc_stop = function()
 {
 	this.func_stop_all_the_other_players();
 	this.func_stop();
-}
+};
 
 // function name: func_acc_play_stop
 // description : toggle play/stop (accessible button)
 // argument : void
 EsAudioPlayer.prototype.func_acc_play_stop = function()
 {
-	this.preventDrawing = false
+	this.preventDrawing = false;
 	this.func_play_stop("play/stop");
-}
+};
 
 // function name: func_acc_play_pause
 // description : toggle play/pause (accessible button)
 // argument : void
 EsAudioPlayer.prototype.func_acc_play_pause = function()
 {
-	this.preventDrawing = false
+	this.preventDrawing = false;
 	this.func_play_stop("play/pause");
-}
+};
 
 // function name: func_acc_seek
 // description : seek (accessible button)
@@ -858,7 +858,7 @@ EsAudioPlayer.prototype.func_acc_seek = function(amount, unit)
 	ms.setPosition(newpos);
 	this.preventDrawing = false;
 	this.anim();
-}
+};
 
 
 // function name: func_stop
@@ -888,7 +888,7 @@ EsAudioPlayer.prototype.func_stop = function()
 	
 	this.anim();
 	esp_playing_no --;
-}
+};
 
 
 
@@ -902,7 +902,7 @@ EsAudioPlayer.prototype.switch_music_by_ttid = function(ttid)
 		}
 	
 	}
-}
+};
 
 EsAudioPlayer.prototype.getCurrentPosition = function()
 {
@@ -916,4 +916,4 @@ EsAudioPlayer.prototype.getCurrentPosition = function()
 		this.start_time = clk_time - snd_time;
 	}
 	return clk_time - this.start_time;
-}
+};

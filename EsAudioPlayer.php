@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.5.2
+Version: 1.6.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -240,8 +240,8 @@ function EsAudioPlayer_read_accessibility_setting()
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
-	global $esplayer_acc_scr_dmylnk_enable;
-	global $esplayer_acc_scr_dmylnk_msg;
+	global $esplayer_acc_scr_lnk_enable;
+	global $esplayer_acc_scr_lnk_msg;
 
 	$esplayer_acc_text_enable = get_option("esaudioplayer_acc_text_enable", "0");
 	$esplayer_acc_msg_download = get_option("esaudioplayer_acc_msg_download", "download the audio");
@@ -267,8 +267,8 @@ function EsAudioPlayer_read_accessibility_setting()
 	$esplayer_acc_scr_frew_amount = get_option("esaudioplayer_acc_scr_frew_amount", "10");
 	$esplayer_acc_scr_frew_unit = get_option("esaudioplayer_acc_scr_frew_unit", "pct");
 	$esplayer_acc_scr_frew_msg = get_option("esaudioplayer_acc_scr_frew_msg", "rewind 10%");
-	$esplayer_acc_scr_dmylnk_enable = get_option("esaudioplayer_acc_scr_dmylnk_enable", "0");
-	$esplayer_acc_scr_dmylnk_msg = get_option("esaudioplayer_acc_scr_dmylnk_msg", "%title%");
+	$esplayer_acc_scr_lnk_enable = get_option("esaudioplayer_acc_scr_lnk_enable", "0");
+	$esplayer_acc_scr_lnk_msg = get_option("esaudioplayer_acc_scr_lnk_msg", "%title%");
 }
 EsAudioPlayer_read_accessibility_setting();
 
@@ -302,8 +302,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
-	global $esplayer_acc_scr_dmylnk_enable;
-	global $esplayer_acc_scr_dmylnk_msg;
+	global $esplayer_acc_scr_lnk_enable;
+	global $esplayer_acc_scr_lnk_msg;
 
 	do_shortcode($content);
 	$url = "";
@@ -382,8 +382,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	if ($acc_scr_enable == "1") {
 		$js_var_a = "Array_EsAudioPlayer[".($player_number-1)."]";
 		$ret .= "<div style=\"position:absolute;left:-3000px;\">";
-		if ($esplayer_acc_scr_dmylnk_enable=="1") {
-			$ret .= "<a href=\"#\" onclick=\"".$js_var_a.".func_acc_play();return -1;\">".str_replace("%title%",$title,$esplayer_acc_scr_dmylnk_msg)."</a>" ;
+		if ($esplayer_acc_scr_lnk_enable=="1") {
+			$ret .= "<a href=\"#\" onclick=\"".$js_var_a.".func_acc_play();return -1;\">".str_replace("%title%",$title,$esplayer_acc_scr_lnk_msg)."</a>" ;
 		}
 		if ($acc_basic_btns == "playstop") {
 			$ret .= "<input type='button' title='" . str_replace("%title%",$title,$esplayer_acc_scr_msg_playstop_btn) . "' onclick=\"".$js_var_a.".func_acc_play_stop();return -1;\"/>";
@@ -479,16 +479,10 @@ function EsAudioPlayer_title_filter( $title ) {
 	global $esAudioPlayer_plugin_URL;
 	global $esplayer_mode;
 
-	echo  "<!--[if lt IE 9]><script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/excanvas.js\"></script><![endif]-->\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/jquery.base64.min.js\"></script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/print_r.js\"></script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/binaryajax.js\"></script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/soundmanager2-jsmin.js\"></script>\n";
-	echo  "<script type=\"text/javascript\"> var esAudioPlayer_plugin_URL = '" . $esAudioPlayer_plugin_URL . "'; </script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";
-	echo "<script type=\"text/javascript\">\nvar esp_tt_data_encoded='';\nvar esp_tt_data; </script>\n";
-	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";
-	echo	"<script type=\"text/javascript\">\n".
+	echo "<script type=\"text/javascript\">\n".
+		"var esplayer_isAdmin=false; \n".
+		"var esAudioPlayer_plugin_URL = '" . $esAudioPlayer_plugin_URL . "';\n".
+		"var esp_tt_data_encoded='';\nvar esp_tt_data; \n".
 		"var esplayer_basecolor_play = '".get_option("esaudioplayer_basecolor_play", "#dbdbdb")."';\n".
 		"var esplayer_symbolcolor_play = '".get_option("esaudioplayer_symbolcolor_play", "#44cc00")."';\n".
 		"var esplayer_basecolor_stop = '".get_option("esaudioplayer_basecolor_stop", "#dbdbdb")."';\n".
@@ -502,6 +496,13 @@ function EsAudioPlayer_title_filter( $title ) {
 		"var esplayer_cornersize = " .get_option("esaudioplayer_cornersize", "18")  .";\n".
 		"var esplayer_smartphonesize = " .get_option("esaudioplayer_smartphonesize", "100")  .";\n".
 		"</script>\n";
+	echo  "<!--[if lt IE 9]><script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/excanvas.js\"></script><![endif]-->\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/jquery.base64.min.js\"></script>\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/print_r.js\"></script>\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/binaryajax.js\"></script>\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/soundmanager2-jsmin.js\"></script>\n";
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";	
+	echo  "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tt.js\"></script>\n";	
 } 
 
 
@@ -580,8 +581,8 @@ function esaudioplayer_magic_function()
 	global $esplayer_acc_scr_frew_amount;
 	global $esplayer_acc_scr_frew_unit;
 	global $esplayer_acc_scr_frew_msg;
-	global $esplayer_acc_scr_dmylnk_enable;
-	global $esplayer_acc_scr_dmylnk_msg;
+	global $esplayer_acc_scr_lnk_enable;
+	global $esplayer_acc_scr_lnk_msg;
 
 	/*  Save Changeボタン押下でコールされた場合、E_POSTに格納された設定情報を保?E */
 	if ( isset($_POST['updateEsAudioPlayerSetting'] ) ) {
@@ -625,8 +626,8 @@ function esaudioplayer_magic_function()
 		update_option('esaudioplayer_acc_scr_frew_amount', $_POST['esaudioplayer_acc_scr_frew_amount']);
 		update_option('esaudioplayer_acc_scr_frew_unit', $_POST['esaudioplayer_acc_scr_frew_unit']);
 		update_option('esaudioplayer_acc_scr_frew_msg', $_POST['esaudioplayer_acc_scr_frew_msg']);
-		update_option('esaudioplayer_acc_scr_dmylnk_enable', isset($_POST['esaudioplayer_acc_scr_dmylnk_enable'])?"1":"0");
-		update_option('esaudioplayer_acc_scr_dmylnk_msg', $_POST['esaudioplayer_acc_scr_dmylnk_msg']);
+		update_option('esaudioplayer_acc_scr_lnk_enable', isset($_POST['esaudioplayer_acc_scr_lnk_enable'])?"1":"0");
+		update_option('esaudioplayer_acc_scr_lnk_msg', $_POST['esaudioplayer_acc_scr_lnk_msg']);
 	}
 
 	global $esaudioplayer_col_ar;
@@ -690,8 +691,8 @@ function esaudioplayer_magic_function()
 		$acc_scr_frew_amount = $esplayer_acc_scr_frew_amount;
 		$acc_scr_frew_unit = $esplayer_acc_scr_frew_unit;
 		$acc_scr_frew_msg = $esplayer_acc_scr_frew_msg;
-		$acc_scr_dmylnk_enable = $esplayer_acc_scr_dmylnk_enable;
-		$acc_scr_dmylnk_msg = $esplayer_acc_scr_dmylnk_msg;
+		$acc_scr_lnk_enable = $esplayer_acc_scr_lnk_enable;
+		$acc_scr_lnk_msg = $esplayer_acc_scr_lnk_msg;
  		?>
 
 		<h3>Color Settings</h3>
@@ -911,13 +912,15 @@ setTimeout('setInterval("esplayer_preview_update()",100);',1000);
 		</td>
 		</tr>
 
-<!--		<tr>
-		<th scope="row" style="text-align:right;">Dummy link to be listed by screen readers</th>
-		<td><input type="checkbox" name="esaudioplayer_acc_scr_dmylnk_enable" value="1" <?php echo $acc_scr_dmylnk_enable=="1"?"checked":""; ?> />Enable<br/>
-		Speech <input type="text" name="esaudioplayer_acc_scr_dmylnk_msg" value="<?php echo $acc_scr_dmylnk_msg; ?>" />
+<!--
+		<tr>
+		<th scope="row" style="text-align:right;">Embed link to be listed by screen readers</th>
+		<td><input type="checkbox" name="esaudioplayer_acc_scr_lnk_enable" value="1" <?php echo $acc_scr_lnk_enable=="1"?"checked":""; ?> />Enable<br/>
+		Speech <input type="text" name="esaudioplayer_acc_scr_lnk_msg" value="<?php echo $acc_scr_lnk_msg; ?>" />
 		</td>
 		</tr>
 -->
+
 		</table>
 
 
@@ -942,9 +945,10 @@ function EsAudioPlayer_admin_head()
 	echo  "<!--[if lt IE 9]><script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/excanvas.js\"></script><![endif]-->\n";
 	echo "<link rel='stylesheet' href='". $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.css' type='text/css' media='all' />\n";
 	echo "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/mattfarina-farbtastic/farbtastic.min.js\"></script>\n";
+	echo "<script type=\"text/javascript\">var esplayer_isAdmin = true;</script>\n";
 	echo "<script type=\"text/javascript\" src=\"" . $esAudioPlayer_plugin_URL . "/esplayer_tes_min.js\"></script>\n";
 }
-add_action( 'admin_head', 'EsAudioPlayer_admin_head' ); 
+add_action( 'admin_head', 'EsAudioPlayer_admin_head'); 
 
 
 /*  <footer>sectionに、player Javascriptを追加   */
