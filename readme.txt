@@ -10,8 +10,16 @@ This is a simple, cross-browser, accessible audio player (MP3 player) plugin.
 
 == Description ==
 
-This is a simple, cross platform, accessible audio player.You can get documentation and view demos from following site:<br>
+This is a simple, cross platform, accessible audio player.
+
+(Basic usage)
+Write a shortcode like the following:<br>
+<br>
+[esplayer url="http://example.com/wp-content/uploads/sample.mp3" width="200" height="25"]<br>
+<br>
+For more details, please see the document from the following URL:<br>
 http://tempspace.net/plugins/?page_id=4
+
 
 This audio player has three different modes:
 
