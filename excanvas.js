@@ -157,14 +157,16 @@ if (!document.createElement('canvas').getContext) {
         if (attrs.width && attrs.width.specified) {
           // TODO: use runtimeStyle and coordsize
           // el.getContext().setWidth_(attrs.width.nodeValue);
-          el.style.width = attrs.width.nodeValue + 'px';
+          flg_d = isNaN(parseInt(attrs.width.nodeValue.substr(attrs.width.nodeValue.length-1,1)));
+          el.style.width = attrs.width.nodeValue + (!flg_d ? 'px' : '');
         } else {
           el.width = el.clientWidth;
         }
         if (attrs.height && attrs.height.specified) {
           // TODO: use runtimeStyle and coordsize
           // el.getContext().setHeight_(attrs.height.nodeValue);
-          el.style.height = attrs.height.nodeValue + 'px';
+          flg_d = isNaN(parseInt(attrs.width.nodeValue.substr(attrs.height.nodeValue.length-1,1)));
+          el.style.height = attrs.height.nodeValue + (!flg_d ? 'px' : '');
         } else {
           el.height = el.clientHeight;
         }

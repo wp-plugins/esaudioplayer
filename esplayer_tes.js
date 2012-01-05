@@ -335,7 +335,7 @@ EsAudioPlayer.prototype.initCanvas = function()
 	}
 	if (!(this.canvas!=null) && esplayer_debug) alert('Canvas could not be prepared. '+this.id+' is null');
 
-	if (1) {
+	if (this.width_org.search(/px/i)==-1 || this.height_org.search(/px/i)==-1) {
 		this.canvas.setAttribute("width",this.canvas_width);
 		this.canvas.setAttribute("height",this.canvas_height);
 		if (this.isIE) { /* in case of IE these procedures must be done twice.I don't know why. */

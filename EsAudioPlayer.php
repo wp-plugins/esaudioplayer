@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.6.0
+Version: 1.6.1
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -272,6 +272,35 @@ function EsAudioPlayer_read_accessibility_setting()
 }
 EsAudioPlayer_read_accessibility_setting();
 
+
+function EsAudioPlayer_DivideDgtUnt($in, &$out_dgt, &$out_unt)
+{
+	for ($i=strlen($in); $i>0; $i--) {
+		if (is_numeric(substr($in, $i-1, 1))) break;
+	}
+	$out_dgt = substr($in, 0, $i);
+	$out_unt = substr($in, $i);
+}
+
+function EsAudioPlayer_CalculateSize($width, $height, $shw_rate, &$ret_w, &$ret_h)
+{
+	$w_d="";
+	$w_u="";
+	$h_d="";
+	$h_u="";
+	EsAudioPlayer_DivideDgtUnt($width, $w_d, $w_u);
+	EsAudioPlayer_DivideDgtUnt($height, $h_d, $h_u);
+
+	if ($shw_rate==-999) $shw_rate=get_option("esaudioplayer_shadowsize", "0.25");
+
+	$shw_size = min($w_d, $h_d) * $shw_rate;
+
+	$ret_w = ($w_d+$shw_size) . $w_u;
+	$ret_h = ($h_d+$shw_size) . $h_u;
+}
+
+
+
 function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $player_number;
 	global $esplayer_imgs_num, $esplayer_imgs, $esplayer_imgs_player_number;
@@ -365,9 +394,15 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	if ($acc_ffwd_btn=="") $acc_ffwd_btn = $esplayer_acc_scr_ffw_enable;
 	if ($acc_frew_btn=="") $acc_frew_btn = $esplayer_acc_scr_frew_enable;
 
+	$width_cv = "";
+	$height_cv = "";
+	EsAudioPlayer_CalculateSize($width, $height, $shadow_size, &$width_cv, &$height_cv);
+	//$width_cv = "5";
+	//$height_cv = "5";
+
 	if ($img_id == "" && $timetable_id == "") {
 		$esplayer_mode="simple";
-		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\" style=\"cursor:pointer;\"></canvas></div>";
+		$ret = "<div style=\"display:inline;position:relative;border:solid 0px #f00;\" id=\"" . $id . "_tmpspan\"><canvas id=\"" . $id . "\" style=\"cursor:pointer;width:$width_cv; height:$height_cv;\" width=\"$width_cv\" height=\"$height_cv\"></canvas></div>";
 	} else if ($timetable_id != "") {
 		$esplayer_mode="slideshow";
 		$ret = "<div id=\"" . $id . "_tmpspan\" style=\"width:".$width."; height:".$height."; background-color:".$bgcolor."; border:".$border_box.";\">&nbsp;</div>";
@@ -756,10 +791,10 @@ function esaudioplayer_magic_function()
 <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Preview)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<div id="esplayer_1_tmpspan" style="display:inline;"><canvas id="esplayer_1" style="cursor:pointer;"></canvas></div>
-<div id="esplayer_2_tmpspan" style="display:inline;"><canvas id="esplayer_2" style="cursor:pointer;"></canvas></div>
-<div id="esplayer_3_tmpspan" style="display:inline;"><canvas id="esplayer_3" style="cursor:pointer;"></canvas></div>
-<div id="esplayer_4_tmpspan" style="display:inline;"><canvas id="esplayer_4" style="cursor:pointer;"></canvas></div>
+<div id="esplayer_1_tmpspan" style="display:inline;"><canvas id="esplayer_1" style="cursor:pointer;" width="60" height="60"></canvas></div>
+<div id="esplayer_2_tmpspan" style="display:inline;"><canvas id="esplayer_2" style="cursor:pointer;" width="60" height="60"></canvas></div>
+<div id="esplayer_3_tmpspan" style="display:inline;"><canvas id="esplayer_3" style="cursor:pointer;" width="120" height="60"></canvas></div>
+<div id="esplayer_4_tmpspan" style="display:inline;"><canvas id="esplayer_4" style="cursor:pointer;" width="120" height="60"></canvas></div>
 <script type="text/javascript">
 
 var esplayer_basecolor_play;
