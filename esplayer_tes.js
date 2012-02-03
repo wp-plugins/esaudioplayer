@@ -5,9 +5,11 @@ if (typeof soundManager == 'undefined') {
 }*/
 
 var Array_EsAudioPlayer = new Array();
-var esp_playing_no = 0;
+var esp_playing_no = 0;  // number of players now playing
 var esp_auto_playing = 0;
 var esp_auto_playing_player_num = 0;
+var esp_series_playing = false;
+var esp_series_playing_btn_id="";
 var soundManager_ready = false;
 var esplayer_jquery_prepared = false;
 
@@ -30,12 +32,15 @@ jQuery(document).ready(function(){
 			args[8],
 			args[9],
 			args[10],
-			(args[11].toLowerCase()=="true"),	//loop
-			(args[12].toLowerCase()=="true"),	//autoplay
-			args[13],
-			args[14],
+			args[11],
+			(args[12].toLowerCase()=="true"),	//loop
+			(args[13].toLowerCase()=="true"),	//autoplay
+			(args[14].toLowerCase()=="true"),	//seriesplaybutton
 			args[15],
-			args[16]);
+			args[16],
+			args[17],
+			args[18],
+			args[19]);
 	}
 	esplayer_autoplay(i-1);
 });
@@ -54,6 +59,31 @@ if (!esplayer_isAdmin) {
 	soundManager.onready(function() {
 		soundManager_ready = true;
 	});
+}
+
+
+function esplayer_seriesplay(sid)
+{
+	for (var i=0; i<Array_EsAudioPlayer.length; i++) {
+		if ((Array_EsAudioPlayer[i].sid==sid || sid=="") && !Array_EsAudioPlayer[i].seriesplaybutton) {
+			Array_EsAudioPlayer[i].autoplay = true;
+		} else {
+			Array_EsAudioPlayer[i].autoplay = false;
+		}
+	}
+	esp_auto_playing = 0;
+	esp_series_playing = true;
+	esplayer_autoplay(Array_EsAudioPlayer.length);
+}
+
+function esplayer_reset_seriesplaybutton()
+{
+	for (var i=0; i<Array_EsAudioPlayer.length; i++) {
+		var es=Array_EsAudioPlayer[i];
+		if (es.seriesplaybutton) {
+			es.draw_button('play');
+		}
+	}
 }
 
 function esplayer_autoplay(player_num)
@@ -80,6 +110,10 @@ function esplayer_autoplay(player_num)
 	}
 	if (i>=esp_auto_playing_player_num) {
 		esp_auto_playing = -1;
+		if (esp_series_playing) {
+			esp_series_playing = false;
+			esplayer_reset_seriesplaybutton();
+		}
 		return;
 	}
 	var ep = Array_EsAudioPlayer[esp_auto_playing];
@@ -103,7 +137,7 @@ function esplayer_autoplay_next()
 	setTimeout('esplayer_autoplay()', 100);
 }
 
-var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, shadow_color, corner_size, smartphone_size, border_img, loop, autoplay, duration, img_id, artist, title) {
+var EsAudioPlayer = function(mode, id, sURL, sid, width, height, v_pos, shadow_size, shadow_color, corner_size, smartphone_size, border_img, loop, autoplay, seriesplaybutton, duration, volume, img_id, artist, title) {
 	this.basecolor_play = '';
 	this.symbolcolor_play = '';
 	this.basecolor_stop = '';
@@ -126,6 +160,7 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	this.canvas = 0;
 	this.that = this;
 	this.id = id;
+	this.sid = sid;
 	this.img_id = img_id;
 	this.width_org = width;
 	this.height_org = height;
@@ -147,9 +182,11 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 	this.border_img = border_img;
 	this.debug_msg = '';
 	this.duration = this.calc_duration(duration); //manually specified duration of audio (milliseconds)
+	this.volume = volume;
 	this.mode = mode;	// 'simple' or 'slideshow' or 'imgclick'
 	this.loop = loop;
-	this.autoplay = autoplay;	
+	this.autoplay = autoplay;
+	this.seriesplaybutton = seriesplaybutton;	
 	this.tt_id_list = new Array();   // Time table ID list
 	this.ready = false;
 	
@@ -157,6 +194,7 @@ var EsAudioPlayer = function(mode, id, sURL, width, height, v_pos, shadow_size, 
 
 	var callMethod_init = function() {that.init();};
 	this.init_id = setInterval(callMethod_init, 100);
+	this.anim_interval_id = -1;
 };
 
 
@@ -178,7 +216,7 @@ EsAudioPlayer.prototype.init = function()
 	this.slider_mouse_ofs_x = 0;
 	this.slider_mouse_ofs_y = 0;
 
-	this.slider_length = (this.width>=this.height*2) ? this.sx_en - this.sx_st : 0;
+	this.slider_length = (this.width>=this.height*2 && !this.seriesplaybutton) ? this.sx_en - this.sx_st : 0;
 	this.slider_drag=false;
 	this.slider_width = this.height*0.1;
 	this.slider_height = this.height*0.5;
@@ -237,11 +275,7 @@ EsAudioPlayer.prototype.init = function()
 
 	// sound initialization
 	var  callMethod_init = function() {that.initSound();};
-	setInterval(callMethod_init, 200);
-
-	// start animation
-	var callMethod = function() {that.anim();};
-	setInterval(callMethod, 500);
+	this.initSound_interval_id = setInterval(callMethod_init, 200);
 
 	// add this object to the player list (for exclusive play control)
 	Array_EsAudioPlayer[Array_EsAudioPlayer.length] = this;
@@ -378,7 +412,7 @@ EsAudioPlayer.prototype.getSetting = function(force_reset)
 // argument : void
 EsAudioPlayer.prototype.initSound = function() 
 {
-	if (esplayer_isAdmin) {
+	if (esplayer_isAdmin || this.seriesplaybutton) {
 		// Creating dummy soundmanager object for preview in the admin page.
 		function DMY(){}; 
 		DMY.prototype.setPosition = function(p){this.position=p;};
@@ -394,6 +428,8 @@ EsAudioPlayer.prototype.initSound = function()
 		this.mySound[0].bytesTotal=1;
 		this.mySoundPosition[0] = 0;
 		this.created=true;
+		this.anim();
+		clearInterval(this.initSound_interval_id);
 		return;
 	}
 
@@ -417,12 +453,13 @@ EsAudioPlayer.prototype.initSound = function()
 							autoLoad:false,
 							stream: true,
 							autoPlay: false,
-							volume:100
+							volume:this.volume
 						});
 					}
 					this.mySoundPosition[i] = 0;
 				}
 				this.created=true;
+				clearInterval(this.initSound_interval_id);
 			} else {
 				if (soundManager.canPlayURL(this.sURLs[0])) {
 					this.mySound[0] = soundManager.createSound({
@@ -431,12 +468,13 @@ EsAudioPlayer.prototype.initSound = function()
 						autoLoad:false,
 						stream: true,
 						autoPlay: false,
-						volume:100
+						volume:this.volume
 					});
 				}
 				this.mySoundPosition[0] = 0;
 				this.created=true;
-
+				clearInterval(this.initSound_interval_id);
+				this.anim();
 			}
 		}
 	}
@@ -459,7 +497,21 @@ EsAudioPlayer.prototype.onClick = function(ev)
 
 	var btn_width = this.width>=this.height*2 ? this.height : this.width;
 	if (px>=1 && py>=1 && px<btn_width/*-this.shw_size*/ && py<this.height/*-this.shw_size*/) {
+		if (this.seriesplaybutton) {
+			this.func_stop_all_the_other_players();
+			if (esp_series_playing) {
+				esp_series_playing = false;
+				esplayer_reset_seriesplaybutton();
+				return;
+			}
+			esp_series_playing_btn_id = this.id;
+			esplayer_seriesplay(this.sid);
+			this.draw_button('stop');
+			return;
+		}
 		esp_auto_playing = -1;
+		esp_series_playing = false;
+		esplayer_reset_seriesplaybutton();
 		this.func_play_stop();
 	}
 
@@ -629,7 +681,29 @@ EsAudioPlayer.prototype.ie_shadow = function(ctx,x1,y1,x2,y2,color,size)
 	}
 };
 
+EsAudioPlayer.prototype.draw_button=function(btn)
+{
+	var ctx = this.canvas.getContext('2d');
+	ctx.clearRect(0,0, this.canvas_width, this.canvas_height);
 
+	var btn_width = this.width>=this.height*2 ? this.height : this.width;
+	switch (btn) {
+		case 'play':
+			this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_play);
+			this.draw_play_button(0,0,btn_width-0,this.height-0,this.symbolcolor_play);
+			break;
+		case 'stop':
+			this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_stop);
+			this.draw_stop_button(0,0,btn_width-0,this.height-0,this.symbolcolor_stop);
+			break;
+		case 'pause':
+			this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_pause);
+			this.draw_pause_button(0,0,btn_width-0,this.height-0,this.symbolcolor_pause);
+			break;
+	}
+}
+
+var cnt=0;
 // function name: anim
 // description : displaying player
 // argument : void
@@ -654,24 +728,16 @@ EsAudioPlayer.prototype.anim = function()
 
 	if (this.mode == "simple") {
 		var ctx = this.canvas.getContext('2d');
-
-		ctx.clearRect(0,0, this.canvas_width, this.canvas_height);
-
-		var btn_width = this.width>=this.height*2 ? this.height : this.width;
 		if (this.play) {
 			if (this.pause) {
-				this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_play);
-				this.draw_play_button(0,0,btn_width-0,this.height-0,this.symbolcolor_play);
+				this.draw_button('play');
 			} else if (this.slider_length>0) {
-				this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_pause);
-				this.draw_pause_button(0,0,btn_width-0,this.height-0,this.symbolcolor_pause);
+				this.draw_button('pause');
 			} else {
-				this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_stop);
-				this.draw_stop_button(0,0,btn_width-0,this.height-0,this.symbolcolor_stop);
+				this.draw_button('stop');
 			}
 		} else {
-			this.draw_button_base(0,0,this.width-0,this.height-0,this.basecolor_play);
-			this.draw_play_button(0,0,btn_width-0,this.height-0,this.symbolcolor_play);
+			this.draw_button('play');
 		}
 		//ctx.strokeStyle="rgba(0,0,255,1)";ctx.strokeRect(0,0, this.canvas_width, this.canvas_height);
 		if (this.slider_length > 0) {
@@ -763,6 +829,11 @@ EsAudioPlayer.prototype.func_play_stop = function()
 	}
 
 	if (!this.play) {
+		// start animation
+		var that = this;
+		var callMethod = function() {that.anim();};
+		this.anim_interval_id = setInterval(callMethod, 50);
+
 		this.start_time = (new Date()).getTime();
 		this.mySound[this.nowPlaying].play();
 		//this.mySound[this.nowPlaying].setPosition(0);
@@ -882,11 +953,15 @@ EsAudioPlayer.prototype.func_stop = function()
 			autoLoad:false,
 			stream: true,
 			autoPlay: false,
-			volume:100
+			volume:this.volume
 		});
 	}
 	
 	this.anim();
+	if (this.anim_interval_id!=-1) {
+		clearInterval(this.anim_interval_id);
+		this.anim_interval_id = -1;
+	}
 	esp_playing_no --;
 };
 

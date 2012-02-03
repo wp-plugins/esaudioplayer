@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.6.1
+Version: 1.7.0
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -336,6 +336,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	do_shortcode($content);
 	$url = "";
+	$sid = "";
 	$img_id = "";
 	$timetable_id="";
 	$width="";
@@ -350,8 +351,10 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$border_img="0";
 	$esplayer_mode="0";
 	$loop="false";
-	$autoplay="false";	
+	$autoplay="false";
+	$seriesplaybutton="false";
 	$duration="";
+	$volume="100";
 	$acc_basic_btns="";
 	$acc_fwd_btn="";
 	$acc_rwd_btn="";
@@ -462,9 +465,11 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 	$ret .= "<input type=\"hidden\" id=\"".$js_var."\" value=\""
 		. $esplayer_mode
 		. '|' 
-		. $id 
-		. '|' 
+		. $id
+		. '|'  
 		. ($esplayer_mode=="slideshow"?$timetable_id:$url) 
+		. '|' 
+		. $sid
 		. '|' 
 		. $width
 		. '|' 
@@ -486,7 +491,11 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 		. '|'
 		. $autoplay
 		. '|'
+		. $seriesplaybutton
+		. '|'
 		. $duration 
+		. '|' 
+		. $volume
 		. '|' 
 		. $img_id
 		. '|' 
@@ -829,16 +838,16 @@ esplayer_reflect_setting();
 
 var esplayervar1;
 jQuery(document).ready(function() {
-esplayervar1 = new EsAudioPlayer("simple", "esplayer_1", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+esplayervar1 = new EsAudioPlayer("simple", "esplayer_1", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, false, false, "1:18", 0, "", "", ""); });
 var esplayervar2;
 jQuery(document).ready(function() {
-esplayervar2 = new EsAudioPlayer("simple", "esplayer_2", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+esplayervar2 = new EsAudioPlayer("simple", "esplayer_2", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "", "25px", "25px", "-0px", 1, "#888",-999,-999, "0", false, false, false, "1:18", 0, "", "", ""); });
 var esplayervar3;
 jQuery(document).ready(function() {
-esplayervar3 = new EsAudioPlayer("simple", "esplayer_3", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+esplayervar3 = new EsAudioPlayer("simple", "esplayer_3", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, false, false, "1:18", 0, "", "", ""); });
 var esplayervar4;
 jQuery(document).ready(function() {
-esplayervar4 = new EsAudioPlayer("simple", "esplayer_4", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, "1:18", "", "", ""); });
+esplayervar4 = new EsAudioPlayer("simple", "esplayer_4", "http://tempspace.net/hu7/wp-content/uploads/mus/a_nys_2fwksong01.mp3", "", "90px", "25px", "-0px", 1, "#888",-999,-999, "0", false, false, false, "1:18", 0, "", "", ""); });
 
 function esplayer_preview_update()
 {
