@@ -10,6 +10,7 @@ var esp_auto_playing = 0;
 var esp_auto_playing_player_num = 0;
 var esp_series_playing = false;
 var esp_series_playing_btn_id="";
+var esp_series_playing_loop = false;
 var soundManager_ready = false;
 var esplayer_jquery_prepared = false;
 
@@ -62,8 +63,10 @@ if (!esplayer_isAdmin) {
 }
 
 
-function esplayer_seriesplay(sid)
+function esplayer_seriesplay(sid, loop)
 {
+	esp_series_playing_btn_id = sid;
+	esp_series_playing_loop = loop;
 	for (var i=0; i<Array_EsAudioPlayer.length; i++) {
 		if ((Array_EsAudioPlayer[i].sid==sid || sid=="") && !Array_EsAudioPlayer[i].seriesplaybutton) {
 			Array_EsAudioPlayer[i].autoplay = true;
@@ -111,8 +114,12 @@ function esplayer_autoplay(player_num)
 	if (i>=esp_auto_playing_player_num) {
 		esp_auto_playing = -1;
 		if (esp_series_playing) {
-			esp_series_playing = false;
-			esplayer_reset_seriesplaybutton();
+			if (esp_series_playing_loop) {
+				esplayer_seriesplay(esp_series_playing_btn_id, esp_series_playing_loop);
+			} else {
+				esp_series_playing = false;
+				esplayer_reset_seriesplaybutton();
+			}
 		}
 		return;
 	}
@@ -502,10 +509,9 @@ EsAudioPlayer.prototype.onClick = function(ev)
 			if (esp_series_playing) {
 				esp_series_playing = false;
 				esplayer_reset_seriesplaybutton();
-				return;
+				if (esp_series_playing_btn_id == this.sid) return;
 			}
-			esp_series_playing_btn_id = this.id;
-			esplayer_seriesplay(this.sid);
+			esplayer_seriesplay(this.sid, this.loop);
 			this.draw_button('stop');
 			return;
 		}
@@ -717,6 +723,10 @@ EsAudioPlayer.prototype.anim = function()
 	}
 	if (this.play && !this.mySound[this.nowPlaying].playState && !this.flgInitializing_beforePlaying && !esplayer_isAdmin) {
 		this.func_stop();
+		if (this.loop) {
+			this.func_acc_play_stop();
+			return;
+		}
 		if (this.mode!="slideshow") esplayer_autoplay_next(); // even when "slideshow" mode, "anim" watches playing states.
 	}
 
