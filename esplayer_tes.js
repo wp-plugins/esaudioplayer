@@ -202,6 +202,7 @@ var EsAudioPlayer = function(mode, id, sURL, sid, width, height, v_pos, shadow_s
 	var callMethod_init = function() {that.init();};
 	this.init_id = setInterval(callMethod_init, 100);
 	this.anim_interval_id = -1;
+	this.anim_init_interval_id = -1;
 };
 
 
@@ -282,7 +283,7 @@ EsAudioPlayer.prototype.init = function()
 
 	// start animation 
 	var callMethod = function() {that.anim();}; 
-	setInterval(callMethod, 1000); 
+	this.anim_init_interval_id = setInterval(callMethod, 1000); 
 
 	// sound initialization
 	var  callMethod_init = function() {that.initSound();};
@@ -791,6 +792,11 @@ EsAudioPlayer.prototype.anim = function()
 			ctx.fillStyle = this.color_slider_knob;
 			ctx.fillRect(xpos-this.slider_width/2 ,b_y-this.slider_height/2, this.slider_width, this.slider_height);
 		}
+	}
+
+	if (this.anim_init_interval_id != -1) {
+		clearInterval(this.anim_init_interval_id);
+		this.anim_init_interval_id = -1;
 	}
 
 	if (!this.created) return;
