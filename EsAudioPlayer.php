@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.7.1
+Version: 1.7.2
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2

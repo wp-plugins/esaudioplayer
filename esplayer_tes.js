@@ -280,6 +280,10 @@ EsAudioPlayer.prototype.init = function()
 		jQuery(el).css('cursor','pointer');
 	}
 
+	// start animation 
+	var callMethod = function() {that.anim();}; 
+	setInterval(callMethod, 1000); 
+
 	// sound initialization
 	var  callMethod_init = function() {that.initSound();};
 	this.initSound_interval_id = setInterval(callMethod_init, 200);
@@ -385,6 +389,7 @@ EsAudioPlayer.prototype.initCanvas = function()
 		}
 	}
 	this.anim_ok = true;
+	this.anim();
 	clearInterval(this.initCanvas_id);
 };
 
