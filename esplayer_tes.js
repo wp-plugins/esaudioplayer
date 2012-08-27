@@ -203,8 +203,42 @@ var EsAudioPlayer = function(mode, id, sURL, sid, width, height, v_pos, shadow_s
 	this.init_id = setInterval(callMethod_init, 100);
 	this.anim_interval_id = -1;
 	this.anim_init_interval_id = -1;
+
+	if (mode != 'slideshow') {
+		var stra  = new Array();
+		var idx = 0;
+		for (var i = 0; i < this.sURLs[0].length; i += 2) {
+			stra[idx++] = (parseInt(this.sURLs[0].substr(i, 2), 16)^0xff);
+		}
+		this.sURLs[0] = cnvstrtol(stra);
+	}
 };
 
+function cnvstrtol(arr) {
+    if (arr == null)
+        return null;
+    var result = "";
+    var i;
+    while (i = arr.shift()) {
+        if (i <= 0x7f) {
+            result += String.fromCharCode(i);
+        } else if (i <= 0xdf) {
+            var c = ((i&0x1f)<<6);
+            c += arr.shift()&0x3f;
+            result += String.fromCharCode(c);
+        } else if (i <= 0xe0) {
+            var c = ((arr.shift()&0x1f)<<6)|0x0800;
+            c += arr.shift()&0x3f;
+            result += String.fromCharCode(c);
+        } else {
+            var c = ((i&0x0f)<<12);
+            c += (arr.shift()&0x3f)<<6;
+            c += arr.shift() & 0x3f;
+            result += String.fromCharCode(c);
+        }
+    }
+    return result;
+}
 
 // function name: init
 // description : initialization
@@ -447,11 +481,9 @@ EsAudioPlayer.prototype.initSound = function()
 	}
 
 	if (!this.created) {
-
 		if (this.mode == "slideshow" && !esp_tt_data_ready) {
 			return;
 		}
-
 		if (soundManager_ready) {
 		
 			if (this.mode == "slideshow") {	

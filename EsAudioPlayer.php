@@ -3,7 +3,7 @@
 Plugin Name: EsAudioPlayer
 Plugin URI: http://tempspace.net/plugins/?page_id=4
 Description: This is an Extremely Simple Audio Player plugin.
-Version: 1.7.2
+Version: 1.7.3
 Author: Atsushi Ueda
 Author URI: http://tempspace.net/plugins/
 License: GPL2
@@ -20,7 +20,8 @@ add_action('init', 'esplayer_init');
 
 
 $player_number = 1;
-$esAudioPlayer_plugin_URL = get_option( 'siteurl' ) . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
+get_home_url();
+$esAudioPlayer_plugin_URL = get_option( 'siteurl' ). '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
 
 function esplayer_is_mobile(){//http://stackoverflow.com/questions/5122566/simple-smart-phone-detection
         $user_agent = $_SERVER['HTTP_USER_AGENT']; // get the user agent value - this should be cleaned to ensure no nefarious input gets executed
@@ -300,6 +301,16 @@ function EsAudioPlayer_CalculateSize($width, $height, $shw_rate, &$ret_w, &$ret_
 }
 
 
+function EsAudioPlayer_strToHex($string)
+{
+    $hex='';
+    for ($i=0; $i < strlen($string); $i++)
+    {
+        $hex .= dechex(ord($string[$i])^0xff);
+    }
+    return $hex;
+}
+
 
 function EsAudioPlayer_shortcode($atts, $content = null) {
 	global $player_number;
@@ -372,6 +383,8 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 		$vp = "-".$vp;
 	}
 
+	$url = EsAudioPlayer_strToHex($url);
+
 	if ($width=="") $width=$height;
 	if ($height=="") $height=$width;
 	if ($height=="") {$height=27; $width=27;}
@@ -399,7 +412,7 @@ function EsAudioPlayer_shortcode($atts, $content = null) {
 
 	$width_cv = "";
 	$height_cv = "";
-	EsAudioPlayer_CalculateSize($width, $height, $shadow_size, &$width_cv, &$height_cv);
+	EsAudioPlayer_CalculateSize($width, $height, $shadow_size, $width_cv, $height_cv);
 	//$width_cv = "5";
 	//$height_cv = "5";
 
