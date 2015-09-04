@@ -3,7 +3,7 @@ Contributors: aueda
 Donate link: http://tempspace.net/plugins/
 Tags: audio,player,cross-browser,cross-platform,accessibility,accessible,cross,browser,platform,slideshow,mp3,mp3 player,audio player,soundmanager2
 Requires at least: 3.3.0
-Tested up to: 3.4.1
+Tested up to: 4.3.0
 Stable tag: 1.7.3
 
 This is a simple, cross-browser, accessible audio player (MP3 player) plugin.
